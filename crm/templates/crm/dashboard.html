@@ -1,0 +1,238 @@
+{% extends 'crm/base.html'%}
+
+{% block content %}
+
+  <!-- cards -->
+  <section style="margin-top: 50px;">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-xl-10 col-lg-9 col-md-8 ml-auto">
+          <div class="row">
+            <div class="col-xl-3 col-sm-6 p-2">
+              <div class="card card-common">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between">
+                    <i class="fas fa-shopping-cart fa-3x text-secondary"></i>
+                    <div class="text-right text-secondary">
+                      <h5>Sales</h5>
+                      <h3>Rs. {{sales}}</h3>
+                    </div>
+                  </div>
+                </div>
+                <!-- <div class="card-footer text-secondary">
+                  <i class="fas fa-sync mr-3"></i>
+                  <span>Updated Now</span>
+                </div> -->
+              </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 p-2">
+              <div class="card card-common">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between">
+                    <i class="fas fa-money-bill-alt fa-3x text-secondary"></i>
+                    <div class="text-right text-secondary">
+                      <h5>Expenses</h5>
+                      <h3>Rs. {{expenses}}</h3>
+                    </div>
+                  </div>
+                </div>
+                <!-- <div class="card-footer text-secondary">
+                  <i class="fas fa-sync mr-3"></i>
+                  <span>Updated Now</span>
+                </div> -->
+              </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 p-2">
+              <div class="card card-common">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between">
+                    <i class="fas fa-users fa-3x text-secondary"></i>
+                    <div class="text-right text-secondary">
+                      <h5>Users</h5>
+                      <h3>{{users}}</h3>
+                    </div>
+                  </div>
+                </div>
+                <!-- <div class="card-footer text-secondary">
+                  <i class="fas fa-sync mr-3"></i>
+                  <span>Updated Now</span>
+                </div> -->
+              </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 p-2">
+              <div class="card card-common">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between">
+                    <i class="fas fa-chart-line fa-3x text-secondary"></i>
+                    <div class="text-right text-secondary">
+                      <h5>Visitors</h5>
+                      <h3>{{visitors}}</h3>
+                    </div>
+                  </div>
+                </div>
+                <!-- <div class="card-footer text-secondary">
+                  <i class="fas fa-sync mr-3"></i>
+                  <span>Updated Now</span>
+                </div> -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- end of cards -->
+
+
+  <!-- tables -->
+  <section>
+    <div class="container-fluid">
+      <div class="row mb-5">
+        <div class="col-xl-10 col-lg-9 col-md-8 ml-auto">
+          <div class="row align-items-center">
+            <div class="col-xl-6 col-12 mb-4 mb-xl-0">
+              <h3 class="text-muted text-center mb-3">Orders</h3>
+              <table class="table table-striped bg-light text-center">
+                <thead>
+                  <tr class="text-muted">
+                    <th>Customer</th>
+                    <th>Product</th>
+                    <th>Location</th>
+                    <th>Code</th>
+                    <th>Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {%  for i in orders %}
+                  <tr>
+                    <td>{{i.customer}}</td>
+                    <td>{{i.product}}</td>
+                    <td>{{i.delivery_place}}</td>
+                    <td>{{i.code}}</td>
+                    <td>{{i.total_money}}</td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+
+              <!-- pagination -->
+              <!-- <nav>
+                <ul class="pagination justify-content-center">
+                  <li class="page-item">
+                    <a href="#" class="page-link py-2 px-3">
+                      <span>&laquo;</span>
+                    </a>
+                  </li>
+                  <li class="page-item active">
+                    <a href="#" class="page-link py-2 px-3">
+                      1
+                    </a>
+                  </li>
+                  <li class="page-item">
+                    <a href="#" class="page-link py-2 px-3">
+                      2
+                    </a>
+                  </li>
+                  <li class="page-item">
+                    <a href="#" class="page-link py-2 px-3">
+                      3
+                    </a>
+                  </li>
+                  <li class="page-item">
+                    <a href="#" class="page-link py-2 px-3">
+                      <span>&raquo;</span>
+                    </a>
+                  </li>
+                </ul>
+              </nav> -->
+              <!-- end of pagination -->
+
+            </div>
+            <div class="col-xl-6 col-12">
+              <h3 class="text-muted text-center mb-3">Payments</h3>
+              <table id="payments-datatable" class="table table-dark table-hover text-center">
+                <thead>
+                  <tr class="text-muted">
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                    <!-- <th>Status</th> -->
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for p in payments %}
+                  <tr>
+                    <th>{{p.id}}</th>
+                    <th>{{p.o.customer.name}}</th>
+                    <td>{{p.amount}}</td>
+                    <td>{{p.create_date}}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+              <!-- pagination -->
+              <!-- <nav>
+                <ul class="pagination justify-content-center">
+                  <li class="page-item">
+                    <a href="#" class="page-link py-2 px-3">
+                      <span>Previous</span>
+                    </a>
+                  </li>
+                  <li class="page-item active">
+                    <a href="#" class="page-link py-2 px-3">
+                      1
+                    </a>
+                  </li>
+                  <li class="page-item">
+                    <a href="#" class="page-link py-2 px-3">
+                      2
+                    </a>
+                  </li>
+                  <li class="page-item">
+                    <a href="#" class="page-link py-2 px-3">
+                      3
+                    </a>
+                  </li>
+                  <li class="page-item">
+                    <a href="#" class="page-link py-2 px-3">
+                      <span>Next</span>
+                    </a>
+                  </li>
+                </ul>
+              </nav> -->
+              <!-- end of pagination -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- end of tables -->
+<script>
+
+function initPaymentsDatatable(){
+    var invoicetable = $('#payments-datatable').DataTable({
+        info:true,
+        pageLength: 20,
+        "sScrollY": "200",
+        "sScrollX": "100%",
+        "sScrollXInner": "100%",
+        "bScrollCollapse": false,
+        // striped:true,
+        // orderCellsTop: true,
+        // fixedHeader: true,
+        // "autoWidth": true,
+        dom:'Bfrtip',
+        // data: data,
+        "pagingType": "simple",
+    });  
+
+}
+
+    $(document).ready(function() {
+      initPaymentsDatatable();
+    });
+</script>
+
+{% endblock %}
