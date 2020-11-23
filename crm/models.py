@@ -28,6 +28,8 @@ class Customer(models.Model):
     def __str__(self):
         return self.name
 
+    def json(self):
+        return {'name':self.name,'phone':self.phone,'address':self.address}
 
 class Order(models.Model):
     customer = models.ForeignKey(Customer, null= True, on_delete= models.SET_NULL)

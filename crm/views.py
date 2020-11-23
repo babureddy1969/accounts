@@ -4,7 +4,7 @@ from . models import  Customer, Order, Product, Product_stock,\
 from . forms  import OrderForm, Supplier_slipForm
 from . filters import OrderFilter, CustomerFilter
 from django.db.models import Max, Min, Sum, Avg, Count, Value
-
+from django.http.response import JsonResponse
 # Create your views here.
 def home(request):
     orders = Order.objects.all()
@@ -28,6 +28,21 @@ def customers(request):
     customers = Customer.objects.all()
     return render(request, 'crm/customers.html',{'customers' : customers})
 
+def customer_det(request,pk):
+    return JsonResponse({'data':Customer.objects.get(pk=pk).json()})
+
+def savecustomer(request):
+    id = request.GET.get("id",None)
+    c = Customer()
+    if id:
+        c = Customer.objects.get(pk=id)
+    c.name=request.GET.get('name','')
+    c.phone=request.GET.get('tel1','')
+    # c.tel2=request.GET.get('tel2','')
+    c.address=request.GET.get('address','')
+    c.save()
+    customers = Customer.objects.all()
+    return render(request, 'crm/customers.html',{'customers' : customers})
 
 def customer_detail(request,pk):
     customer = Customer.objects.get(id=pk)
@@ -41,6 +56,9 @@ def customer_detail(request,pk):
     context = {'customer': customer, 'orders':orders,'order_count':order_count, 'myFilter': myFilter}
     return render(request, 'crm/customer_detail.html', context) 
 
+def customer_delete(request,pk):
+    customer = Customer.objects.get(pk=pk).delete()
+    return redirect('/customers/')
 
 def orders(request):
     orders = Order.objects.all()

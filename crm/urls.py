@@ -12,7 +12,10 @@ urlpatterns = [
 
     #customer
     path('customers/', views.customers, name="customers"),
+    path('customer_det/<str:pk>/',views.customer_det, name="customer_det"),
     path('customer/<str:pk>/',views.customer_detail, name="customer_detail"),
+    path('savecustomer/',views.savecustomer, name="savecustomer"),
+    path('customer_delete/<str:pk>/',views.customer_delete, name="customer_delete"),
 
     #supplier
     path('suppliers/',views.suppliers, name="suppliers"),
