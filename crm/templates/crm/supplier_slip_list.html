@@ -16,8 +16,8 @@
                     <tr class="text-muted">
                       <th>Supplier</th>
                       <th>Product</th>
-                      <th>Delivery Place</th>
-                      <th>Code</th>
+                      <th>Location</th>
+                      <th>Qty</th>
                       <th>Total money</th>
                       <th>Date</th>
                     </tr>
@@ -28,8 +28,8 @@
                       <td>{{item.supplier}}</td>
                       <td>{{item.product}}</td>
                       <td>{{item.delivery_place}}</td>
-                      <td>{{item.code}}</td>
-                      <td>{{item.total_money}}</td>
+                      <td>{{item.qty}}</td>
+                      <td>{{item.cost}}</td>
                       <td>{{item.date_created}}</td>
                       <td><a class="btn btn-info" href="{% url 'update_supplier_slip' item.id %}">Update</a></td>
                       <td><a class="btn btn-danger" href="{% url 'delete_supplier_slip' item.id %}">Delete</a></td>

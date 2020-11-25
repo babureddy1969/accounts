@@ -8,7 +8,7 @@
         <div class="col-xl-10 col-lg-9 col-md-8 ml-auto mt-5">
           <div class="row align-items-center">
             <div class="col mt-3 mr-3">
-                <h3 class="text-muted text-center mb-3">Customers&nbsp;&nbsp;<a data-toggle="modal" href="#customerModal"><span><i  style="color:green" class="fa fa-plus" aria-hidden="true"></i></span></a></h3>
+                <h3 class="text-muted text-center mb-3">Customers&nbsp;&nbsp;<a data-toggle="modal" href="#customerModal"></a></h3>
                 <table class="table table-striped bg-light text-center">
                 <thead>
                   <tr class="text-muted">
@@ -28,7 +28,7 @@
                       <td>{{customer.address}}</td>
                       <td>{{customer.date_created}}</td>
                       <td><a href="{% url 'customer_detail' customer.id %}" class="btn btn-sm btn-info">Orders</a></td>
-                      <td><button  onclick="javascript : editCustomer({{customer.id}});" class="btn btn-sm btn-info ">Edit</button></td>
+                      <!-- <td><button  onclick="javascript : editCustomer({{customer.id}});" class="btn btn-sm btn-info ">Edit</button></td> -->
                     </tr>
                   {% endfor %}
 

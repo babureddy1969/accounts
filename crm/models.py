@@ -3,7 +3,7 @@ from django.db import models
 
 class Product(models.Model):
     name = models.CharField(max_length=200, null=True)
-    code = models.CharField(max_length=200, null=True)
+    qty = models.IntegerField(null=True,default=1)
     details = models.CharField(max_length=200, null=True)
     price = models.DecimalField(max_digits=18, decimal_places=2,default=0.00,null=True)
     date_created = models.DateTimeField(auto_now_add=True, null=True)
@@ -31,13 +31,15 @@ class Customer(models.Model):
     def json(self):
         return {'name':self.name,'phone':self.phone,'address':self.address}
 
+
+
 class Order(models.Model):
     customer = models.ForeignKey(Customer, null= True, on_delete= models.SET_NULL)
     product = models.ForeignKey(Product, null= True, on_delete= models.SET_NULL)
     delivery_place = models.CharField(max_length=200, null=True)
-    code = models.CharField(null=True,max_length=10,default='')
-    total_money = models.IntegerField(null=True)
-    debit_amount = models.IntegerField(null=True, blank=True)
+    qty = models.IntegerField(null=True,default=1)
+    cost = models.IntegerField(null=True,default=0)
+    final_cost = models.IntegerField(null=True, blank=True,default=0)
     discount = models.IntegerField(null=True, blank=True,default=0)
     date_created = models.DateTimeField(auto_now_add=True, null=True)
 
@@ -50,7 +52,7 @@ class Payment(models.Model):
 
 class Customer_dena(models.Model):
     customer = models.ForeignKey(Customer, null= True, on_delete= models.SET_NULL)
-    amount = models.IntegerField(null=True)
+    final_cost = models.IntegerField(null=True)
 
 
 class Supplier(models.Model):
@@ -67,9 +69,9 @@ class Supplier_slip(models.Model):
     supplier = models.ForeignKey(Supplier, null= True, on_delete= models.SET_NULL)
     product = models.ForeignKey(Product, null= True, on_delete= models.SET_NULL)
     delivery_place = models.CharField(max_length=200, null=True)
-    code = models.CharField(null=True,max_length=10,default='')
-    total_money = models.IntegerField(null=True)
-    debit_amount = models.IntegerField(null=True, blank=True)
+    qty = models.IntegerField(null=True,default=0)
+    cost = models.IntegerField(null=True)
+    final_cost = models.IntegerField(null=True, blank=True)
     date_created = models.DateTimeField(auto_now_add=True, null=True)
 
 

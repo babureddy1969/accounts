@@ -21,7 +21,7 @@
                 {% for item in orders %}
                 <tr>
                   <td>{{item.product.name}}</td>
-                  <td>{{item.code}}</td>
+                  <td>{{item.qty}}</td>
                   <td>{{item.date_created}}</td>
                 </tr>
                 {% endfor %}
@@ -40,7 +40,7 @@
                 {% for item in supplier_slip_list %}
                 <tr>
                   <td>{{item.product.name}}</td>
-                  <td>{{item.code}}</td>
+                  <td>{{item.qty}}</td>
                   <td>{{item.date_created}}</td>
                 </tr>
                 {% endfor %}

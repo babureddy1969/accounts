@@ -20,8 +20,8 @@
                 <thead>
                   <tr class="text-muted">
                     <th>Product</th>
-                    <th>Delivery place</th>
-                    <th>Code</th>
+                    <th>Location</th>
+                    <th>Qty</th>
                     <th>Total Money</th>
                     <th>Date Ordered</th>
                     <th>Update</th>
@@ -34,8 +34,8 @@
                     <tr>
                       <td>{{order.product}}</td>
                       <td>{{order.delivery_place}}</td>
-                      <td>{{order.code}}</td>
-                      <td>{{order.total_money}}</td>
+                      <td>{{order.qty}}</td>
+                      <td>{{order.cost}}</td>
                       <td>{{order.date_created}}</td>
                       <td><a class="btn btn-info" href="{% url 'update_order' order.id %}">Update</a></td>
                       <td><a class="btn btn-danger" href="{% url 'delete_order' order.id %}">Delete</a></td>

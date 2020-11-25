@@ -9,8 +9,8 @@ from django.http.response import JsonResponse
 def home(request):
     orders = Order.objects.all()
     customers = Customer.objects.all()
-    sales = Order.objects.values('total_money').annotate(a=Sum('total_money')).values('a')[0]['a']
-    expenses = Order.objects.values('total_money').annotate(a=Sum('total_money')).values('a')[0]['a']
+    sales = Order.objects.values('cost').annotate(a=Sum('cost')).values('a')[0]['a']
+    expenses = Order.objects.values('cost').annotate(a=Sum('cost')).values('a')[0]['a']
     users = Customer.objects.all().count()
     visitors = Customer.objects.all().count()
     payments = Payment.objects.all().order_by('-create_date')
@@ -30,6 +30,9 @@ def customers(request):
 
 def customer_det(request,pk):
     return JsonResponse({'data':Customer.objects.get(pk=pk).json()})
+
+def manager(request):
+    return redirect('/admin/')
 
 def savecustomer(request):
     id = request.GET.get("id",None)
@@ -79,21 +82,21 @@ def createOrder(request):
         if form.is_valid():
             form.save()
             product = form.cleaned_data['product']
-            product_stock = Product_stock.objects.get(product=product)
-            # product_stock.quantity -= form.cleaned_data['code']
-            print(product_stock.quantity)
-            product_stock.save()
+            # product_stock = Product_stock.objects.get(product=product)
+            # product_stock.quantity -= form.cleaned_data['qty']
+            # print(product_stock.quantity)
+            # product_stock.save()
             customer = form.cleaned_data['customer']
-            customer_dena = Customer_dena.objects.filter(customer=customer)
-            if len(customer_dena) :
-                if customer_dena.amount:
-                    customer_dena.amount += form.cleaned_data['debit_amount']
-            else:
-                customer_dena = Customer_dena()
-                customer_dena.customer= customer
-                customer_dena.amount = form.cleaned_data['debit_amount']
-            print(customer_dena.amount)
-            customer_dena.save()
+            # customer_dena = Customer_dena.objects.filter(customer=customer)
+            # if len(customer_dena) :
+            #     if customer_dena.final_cost:
+            #         customer_dena.final_cost += form.cleaned_data['final_cost']
+            # else:
+            #     customer_dena = Customer_dena()
+            #     customer_dena.customer= customer
+            #     customer_dena.amount = form.cleaned_data['final_cost']
+            # print(customer_dena.final_cost)
+            # customer_dena.save()
             return redirect('/orders/')
 
     context = {'form': form}
@@ -152,7 +155,7 @@ def createSupplier_slip(request):
             form.save()
             product = form.cleaned_data['product']
             product_stock = Product_stock.objects.get(product=product)
-            product_stock.quantity += form.cleaned_data['code']
+            product_stock.quantity += form.cleaned_data['qty']
             print(product_stock.quantity)
             product_stock.save()
             return redirect('/supplier_slip_list/')

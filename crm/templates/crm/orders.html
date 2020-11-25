@@ -15,15 +15,16 @@
           <div class="row align-items-center">
             <div class="col mt-3 mr-3">
               
-              <h3 class="text-muted text-center mb-3">Orders</h3>
+              <h3 class="text-muted text-center mb-3">Orders&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="{% url 'create_order' %}" class="btn btn-success btn-sm"> Add</a></h3>            
               <table class="table table-striped bg-light text-center">
                 <thead>
                     <tr class="text-muted">
                       <th>Customer</th>
                       <th>Product</th>
                       <th>Location</th>
-                      <th>Code</th>
-                      <th>Total money</th>
+                      <th>Qty</th>
+                      <th>Amount</th>
+                      <th>Date</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -32,15 +33,15 @@
                       <td>{{order.customer}}</td>
                       <td>{{order.product}}</td>
                       <td>{{order.delivery_place}}</td>
-                      <td>{{order.code}}</td>
-                      <td>{{order.total_money}}</td>
-                      <td><a class="btn btn-info" href="{% url 'update_order' order.id %}">Update</a></td>
-                      <td><a class="btn btn-danger" href="{% url 'delete_order' order.id %}">Delete</a></td>
+                      <td>{{order.qty}}</td>
+                      <td>{{order.cost}}</td>
+                      <td>{{order.date_created}}</td>
+                      <td><a class="btn btn-info btn-sm" href="{% url 'update_order' order.id %}">Update</a></td>
+                      <td><a class="btn btn-danger btn-sm" href="{% url 'delete_order' order.id %}">Delete</a></td>
                     </tr>
                   {% endfor %}
                   </tbody>
-              </table>
-              <a href="{% url 'create_order' %}" class="btn btn-success"> Add Order</a>
+              </table>    
             </div>
           </div>
         </div>

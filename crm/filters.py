@@ -8,7 +8,7 @@ class CustomerFilter(django_filters.FilterSet):
     class Meta:
         model = Order
         fields = '__all__'
-        exclude = ['customer', 'debit_amount', 'code', 'total_money','date_created']
+        exclude = ['customer', 'final_cost', 'qty', 'cost','date_created']
 
 class OrderFilter(django_filters.FilterSet):
     start_date = DateFilter(field_name="date_created", lookup_expr='gte')
@@ -16,4 +16,4 @@ class OrderFilter(django_filters.FilterSet):
     class Meta:
         model = Order
         fields = '__all__'
-        exclude = ['debit_amount', 'code', 'total_money','date_created']
+        exclude = ['final_cost', 'qty', 'cost','date_created']

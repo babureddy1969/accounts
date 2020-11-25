@@ -18,14 +18,14 @@
                   {{ form.delivery_place|as_crispy_field }}
                   <div class="row">
                       <div class="col-md-6">
-                        {{ form.code|as_crispy_field }}
+                        {{ form.qty|as_crispy_field }}
                       </div>
                       <div class="col-md-6">
-                        {{ form.total_money|as_crispy_field }}
+                        {{ form.cost|as_crispy_field }}
                       </div>
                   </div>
 
-                  {{ form.debit_amount|as_crispy_field }}
+                  {{ form.final_cost|as_crispy_field }}
 
 
                   <input type="submit" class="btn btn-success" name="Submit">
