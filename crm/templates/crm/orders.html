@@ -7,23 +7,18 @@
       <div class="row mb-5">
         <div class="col-xl-10 col-lg-9 col-md-8 ml-auto mt-5">
           <div class="card card-body">
-            <!-- <form action="" method="get">
-              {{myFilter.form}}
-              <button class="btn btn-primary" type="submit">Search</button>
-            </form> -->
           </div>
           <div class="row align-items-center">
             <div class="col mt-3 mr-3">
               
-              <h3 class="text-muted text-center mb-3">Orders&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="{% url 'create_order' %}" class="btn btn-success btn-sm"> Add</a></h3>            
+              <h3 class="text-muted text-center mb-3">Orders&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:getOrderDetails(0);" class="btn btn-success btn-sm"> Add</a></h3>            
               <table class="table table-striped bg-light text-center">
                 <thead>
                     <tr class="text-muted">
                       <th>Customer</th>
-                      <th>Product</th>
-                      <th>Location</th>
-                      <th>Qty</th>
                       <th>Amount</th>
+                      <th>Paid</th>
+                      <th>Balance</th>
                       <th>Date</th>
                     </tr>
                   </thead>
@@ -31,13 +26,14 @@
                     {%  for order in orders %}
                     <tr>
                       <td>{{order.customer}}</td>
-                      <td>{{order.product}}</td>
-                      <td>{{order.delivery_place}}</td>
-                      <td>{{order.qty}}</td>
                       <td>{{order.cost}}</td>
+                      <td>{{order.paid}}</td>
+                      <td>{{order.balance}}</td>
                       <td>{{order.date_created}}</td>
-                      <td><a class="btn btn-info btn-sm" href="{% url 'update_order' order.id %}">Update</a></td>
-                      <td><a class="btn btn-danger btn-sm" href="{% url 'delete_order' order.id %}">Delete</a></td>
+                      <td><a class="btn btn-sm btn-info" href="javascript:getOrderDetails({{order.id}});" >Details</a></td>
+                      <!-- <td><a data-toggle="modal" class="btn btn-sm btn-info" href="#orderDetailsModal" >Details</a></td> -->
+                      <!-- <td><a class="btn btn-info btn-sm" href="{% url 'update_order' order.id %}">Update</a></td> -->
+                      <!-- <td><a class="btn btn-danger btn-sm" href="{% url 'delete_order' order.id %}">Delete</a></td> -->
                     </tr>
                   {% endfor %}
                   </tbody>

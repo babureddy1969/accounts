@@ -5,6 +5,7 @@ from . import views
 urlpatterns = [
     path('', views.home, name="dashboard"),
     path('products/', views.products, name="products"),
+    path('getProducts/', views.getProducts, name="getProducts"),
     path('manager/', views.manager, name="manager"),
 
     #stock
@@ -30,9 +31,13 @@ urlpatterns = [
 
     #order
     path('orders/', views.orders, name="orders" ),
+    path('order/<str:pk>', views.orderdetails, name="orderdetails" ),
     path('order_slip/',views.createOrder, name="create_order" ),
     path('update_order/<str:pk>/',views.updateOrder, name="update_order" ),
     path('delete_order/<str:pk>/',views.deleteOrder, name="delete_order" ),
+    path('orderdetail/',views.orderdetail, name="orderdetail" ),
+    path('orderdetailsdelete/',views.orderdetailsdelete, name="orderdetailsdelete" ),
+    path('createOrder/',views.createOrder, name="createOrder"),
 
     #dena pawna
     path('dena_pawna/', views.dena_Pawna, name="denapawna"),

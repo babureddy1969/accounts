@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from . models import  Customer, Order, Product, Product_stock,\
-                        Customer_dena, Supplier, Supplier_slip, Supplier_pawna, Payment
-from . forms  import OrderForm, Supplier_slipForm
+                        Customer_dena, Supplier, Supplier_slip, Supplier_pawna, Payment, OrderDetails
+from . forms  import OrderForm, Supplier_slipForm, OrderDetailsForm
 from . filters import OrderFilter, CustomerFilter
 from django.db.models import Max, Min, Sum, Avg, Count, Value
 from django.http.response import JsonResponse
@@ -23,6 +23,13 @@ def home(request):
 def products(request):
     products = Product.objects.all()
     return render(request, 'crm/products.html',{'products' : products})
+
+def getProducts(request):
+    products = Product.objects.all()
+    data=[]
+    for p in products:
+        data+=[p.json()]
+    return JsonResponse({'count':len(data),'data' : data})
 
 def customers(request):
     customers = Customer.objects.all()
@@ -65,59 +72,59 @@ def customer_delete(request,pk):
 
 def orders(request):
     orders = Order.objects.all()
-
     myFilter = OrderFilter(request.GET, queryset=orders)
     orders = myFilter.qs
-
     context = {'orders' : orders, 'myFilter': myFilter}
-
     return render(request, 'crm/orders.html', context)
 
+def orderdetailsdelete(request):
+    OrderDetails.objects.filter(order=request.GET.get('orderid')).delete()
+    return JsonResponse({'status':200})
+
+def orderdetails(request,pk):
+    orders = OrderDetails.objects.filter(order=pk)
+    data=[]
+    for o in orders:
+        data+=[o.json()]
+    # print(data)
+    return JsonResponse({'count':len(data),'data':data})
+
+def orderdetail(request):
+    orderid = request.GET.get('orderid')
+    itemno = request.GET.get('itemno')
+    itemid = request.GET.get('itemid')
+    if orderid==0:
+        o=Order()
+        orderid=o.save()
+    od = OrderDetails()
+    od.qty=request.GET.get('qty',1)
+    od.order=Order(orderid)
+    od.product=Product(itemid)
+    od.cost=request.GET.get('cost')
+    od.discount=request.GET.get('discount',0)
+    od.final_cost=request.GET.get('final_cost')
+    od.notes=request.GET.get('notes','')
+    od.save()
+    return JsonResponse({'status':200})
 
 def createOrder(request):
+    o=Order()
+    o.customer=request.GET.get('customerid')
+    o.cost=request.GET.get('cost',0)
+    o.paid=request.GET.get('paid',0)
+    o.balance=request.GET.get('balance',0)
+    o.save()
+    return JsonResponse({'status':200})
 
-    form = OrderForm()
-    if request.method == 'POST':
-        form = OrderForm(request.POST)
-        if form.is_valid():
-            form.save()
-            product = form.cleaned_data['product']
-            # product_stock = Product_stock.objects.get(product=product)
-            # product_stock.quantity -= form.cleaned_data['qty']
-            # print(product_stock.quantity)
-            # product_stock.save()
-            customer = form.cleaned_data['customer']
-            # customer_dena = Customer_dena.objects.filter(customer=customer)
-            # if len(customer_dena) :
-            #     if customer_dena.final_cost:
-            #         customer_dena.final_cost += form.cleaned_data['final_cost']
-            # else:
-            #     customer_dena = Customer_dena()
-            #     customer_dena.customer= customer
-            #     customer_dena.amount = form.cleaned_data['final_cost']
-            # print(customer_dena.final_cost)
-            # customer_dena.save()
-            return redirect('/orders/')
-
-    context = {'form': form}
-    return render(request, 'crm/order_form.html', context)
-
-
-def updateOrder(request, pk):
-
+def updateOrder(request):
     order = Order.objects.get(id=pk)
-    form = OrderForm(instance=order)
-
-    if request.method == 'POST':
-        form = OrderForm(request.POST, instance=order)
-        if form.is_valid():
-            form.save()
-            return redirect('/orders/')
-
-
-    context = {'form': form}
-    return render(request,'crm/order_form.html', context)
-
+    od=OrderDetails.objects.filter(order=pk).annotate(a=Sum('final_cost'))
+    p=Payment.objects.filter(o=pk).annotate(a=Sum('amount'))
+    if od: order.cost = od.a
+    if p: order.paid = p.a
+    order.balance=order.cost-order.paid
+    order.save()
+    return redirect('/orders/')
 
 def deleteOrder(request, pk):
 
@@ -163,9 +170,6 @@ def createSupplier_slip(request):
     context = {'form': form}
     return render(request,'crm/supplier_slip_form.html', context)
 
-
-
-
 def updateSupplier_slip(request, pk):
 
     supplier_slip = Supplier_slip.objects.get(id=pk)
@@ -179,7 +183,6 @@ def updateSupplier_slip(request, pk):
 
     context = {'form': form}
     return render(request,'crm/supplier_slip_form.html', context)
-
 
 def deleteSupplier_slip(request, pk):
 

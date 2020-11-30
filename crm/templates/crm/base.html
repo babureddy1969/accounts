@@ -7,14 +7,28 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="title icon" href="{%static 'images/title-img.png'%}">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"
-    integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
-  <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/all.js"
-    integrity="sha384-xymdQtn1n3lH2wcu0qhcdaOpQwyoarkgLVxC/wZ5q7h9gHtxICrpcaSUfygqZGOe"
-    crossorigin="anonymous"></script>
-  <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+  <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" -->
+    <!-- integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous"> -->
+  <!-- <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/all.js" -->
+    <!-- integrity="sha384-xymdQtn1n3lH2wcu0qhcdaOpQwyoarkgLVxC/wZ5q7h9gHtxICrpcaSUfygqZGOe"
+    crossorigin="anonymous"></script> -->
+  <!-- <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet"> -->
   <link rel="stylesheet" type="text/css" href="{% static '/css/base.css' %}">
   <title>Boutique Accounting Software</title>
+
+  <link href="{% static '/plugins/datatables/dataTables.bootstrap4.css' %}" rel="stylesheet" type="text/css" />
+  <link href="{% static '/plugins/datatables/responsive.bootstrap4.css' %}" rel="stylesheet" type="text/css" />
+  <link href="{% static '/plugins/datatables/buttons.bootstrap4.css' %}" rel="stylesheet" type="text/css" />
+  <link href="{% static '/plugins/datatables/select.bootstrap4.css' %}" rel="stylesheet" type="text/css" />
+
+  <link href="{% static '/plugins/daterangepicker/daterangepicker.css' %}" rel="stylesheet" type="text/css" />
+  <link href="{% static '/plugins/bootstrap-datepicker/bootstrap-datepicker.min.css' %}" rel="stylesheet" type="text/css" />
+
+ <!-- App css -->
+ <link href="{% static '/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+ <link href="{% static '/css/icons.min.css' %}" rel="stylesheet" type="text/css" />
+ <!-- <link href="{% static '/assets/css/theme.css' %}" rel="stylesheet" type="text/css" /> -->
+
 </head>
 
 <body>
@@ -102,28 +116,270 @@
   </div>
   <!-- end of modal -->
 
+  <div class="container">
+    <!-- Modal -->
+    <div class="modal fade bd-example-modal-xl " tabindex="-1" id="orderDetailsModal" role="dialog" >
+      <div class="modal-dialog modal-xl  modal-dialog-centered">
+      
+        <!-- Modal content-->
+        <div class="modal-content" >
+            <div class="modal-header">
+                <h4 class="modal-title" id="search_title">Order Details for order no. <span id="orderid"></span></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+              </div>
+              <div class="modal-body">
+                <!-- <input style="position: absolute;left: 50%;transform: translateX(-50%); width:300px;" type="text"  id="myCustomAuditSearchBox" placeholder="Search all fields"> -->
+
+                <table width="90%" id="orderdetails-datatable" class="table table-bordered responsive nowrap  table-striped display ">
+                <thead>
+                </thead>
+                </table>
+                <button class="btn btn-info btn-sm" onclick="addRow();">Add</button>
+                <button class="btn btn-info btn-sm" onclick="saveItem();">Save</button>
+                <input id="total_cost" type="number" style="float:right" disabled class="btn btn-warning btn-sm" value="">
+</div>
+</div>
+</div>
+</div>
+
+</div> <!-- end modal container -->
 
   {% block content %} 
-  
-  
+    
   <!--child template -->
-
   
   {% endblock %}
-
   
+  <script src="{% static '/js/jquery.min.js' %}"></script>
+  <script src="{% static '/js/bootstrap.bundle.min.js' %}"></script>
+  <!-- <script src="{% static '/js/metismenu.min.js' %}"></script> -->
+  <script src="{% static '/js/waves.js' %}"></script>
+  <!-- <script src="{% static '/js/simplebar.min.js' %}"></script> -->
+
+  <!-- third party js -->
+  <script src="{% static '/plugins/datatables/jquery.dataTables.min.js' %}"></script>
+ 
+  <script src="{% static '/plugins/datatables/dataTables.bootstrap4.js' %}"></script>
+  <script src="{% static '/plugins/datatables/dataTables.responsive.min.js' %}"></script>
+  <script src="{% static '/plugins/datatables/responsive.bootstrap4.min.js' %}"></script>
+  <script src="{% static '/plugins/datatables/dataTables.buttons.min.js' %}"></script>
+  <script src="{% static '/plugins/datatables/buttons.bootstrap4.min.js' %}"></script>
+  <script src="{% static '/plugins/datatables/buttons.html5.min.js' %}"></script>
+  <script src="{% static '/plugins/datatables/buttons.flash.min.js' %}"></script>
+  <script src="{% static '/plugins/datatables/buttons.print.min.js' %}"></script>
+  <script src="{% static '/plugins/datatables/dataTables.keyTable.min.js' %}"></script>
+  <script src="{% static '/plugins/datatables/dataTables.select.min.js' %}"></script>
+  <!-- <script src="{% static '/plugins/datatables/pdfmake.min.js' %}"></script> -->
+  <script src="{% static '/plugins/datatables/vfs_fonts.js' %}"></script>
+  <script src="{% static '/plugins/bootstrap-maxlength/bootstrap-maxlength.min.js' %}"></script>
+  <!-- <script src="{% static '/plugins/select2/select2.min.js' %}"></script> -->
+  <!-- <script src="{% static '/plugins/bootstrap-colorpicker/bootstrap-colorpicker.min.js' %}"></script> -->
+  <script src="{% static '/plugins/moment/moment.js' %}"></script>
+  <script src="{% static '/plugins/autonumeric/autoNumeric-min.js' %}"></script>
+  <!-- <script src="{% static '/plugins/chart-js/chart.min.js' %}"></script> -->
+  <!-- third party js ends -->
+
+  <!-- Plugins js -->
+  <script src="{% static '/plugins/bootstrap-datepicker/bootstrap-datepicker.min.js' %}"></script>
+  <script src="{% static '/plugins/daterangepicker/daterangepicker.js' %}"></script>
+  <!-- <script src="{% static '/pages/advanced-plugins-demo.js' %}"></script> -->
+
+  <!-- Mask Js-->
+  <!-- <script src="{% static '/plugins/jquery-mask/jquery.mask.min.js' %}"></script> -->
+
+  <!-- Mask Custom Js-->
+  <!-- <script src="{% static '/pages/mask-demo.js' %}"></script> -->
+      <!-- App js -->
+  <!-- <script src="../static/js/theme.js' %}"></script> -->
+
+  <script src="{% static '/js/dataTables.buttons.min.js' %}"></script>
+  
+  <!-- <script src="{% static '/js/jszip.min.js' %}"></script> -->
+  <script>
+    var firstTime=true;
+    
+    function getOrderDetails(id){
+      if (id == 0) {
+        $("#orderid").text("New Order")
+      } else {
+        $("#orderid").text(id);
+        // $.get( '/order/'+id, function( data ) {
+          // console.log(data.data);
+        // });
+        //   var table = $('#orderdetails-datatable').DataTable({
+        //     "ajax": {
+        //     "url": '/order/'+id,
+        //     "data": function ( d ) {
+        //     // d.extra_search = $('#extra').val();
+        //   }
+        //   }});
+          // table.clear();
+          // data=data.data;
+          // for (i in data){
+          //   console.log(data[i]);
+          //     table.row.add( [ 
+          //     data[i].itemno,data[i].product.name,data[i].cost,data[i].discount,data[i].final_cost,data[i].notes
+          //     ] );
+          // }
+          // table.draw();
+        // });
+      }
+      $("#total_cost").val(0)
+      if (firstTime==false)$('#orderdetails-datatable').DataTable().destroy();
+      var table = $('#orderdetails-datatable').DataTable({
+          info:false,
+          searching:false,
+          ordering:false,
+          paging:false,
+            "ajax": '/order/'+id,
+            // 'data':data.data,
+            "columns": [
+            {data: 'itemno' , title: "Item No",}, 
+            { data: 'product' ,  title: "Item Name", 
+            fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+
+              $(nTd).html(setProduct(oData.product).replace("ITEMID",oData.product).replace("ROWID",iRow+1).replace("ID","item_"+(iRow+1)));
+              // $(nTd).html(productList.replace("ITEMID",oData.product).replace("ROWID",iRow+1).replace("ID","item_"+(iRow+1)));
+                  // $(nTd).html("<select id=\"item_" + (iRow+1) + "\"> <option value=\"-1\"> None</option><option value=\"1\"> Saree</option> <option value=\"2\"> Fall</option> <option value=\"3\"> Kutchu</option> <option value=\"4\"> Blouse</option> <option value=\"5\"> Stitching</option><option value=\"6\"> Others</option></select>");
+                  // console.log("#item_"+(iRow+1),oData.product);
+              }                      
+            },
+             {data: 'qty' , title: "Qty",}, 
+             { data: 'cost' ,  title: "Price", 
+              fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+
+                      $(nTd).html("<input onfocusout=\"adjustCost(this);\"  style=\"width:100px;\" maxlength=\"6\"  type=\"text\" value=\""+oData.cost+"\"  id=\"cost_" + (iRow+1) +"\">");
+                  }                      
+              },
+             { data: 'discount' ,  title: "Discount", 
+              fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+                      $(nTd).html("<input onfocusout=\"adjustTotalCost(this);\"  style=\"width:100px;\" maxlength=\"6\"  type=\"text\" value=\""+oData.discount+"\"  id=\"discount_" + (iRow+1) +"\">");
+                  }                      
+              },
+             { data: 'final_cost' ,  title: "Final Price", 
+              fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+                  $("#total_cost").val(parseInt($("#total_cost").val())+parseInt(oData.final_cost));
+                  $(nTd).html("<input style=\"width:100px;\" maxlength=\"6\"  type=\"text\" value=\""+oData.final_cost+"\"  id=\"final_cost_" + (iRow+1) +"\">");
+              }                      
+          },
+          { data: 'notes' ,  title: "Notes", 
+          fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+                  $(nTd).html("<input style=\"width:100px;\" maxlength=\"6\"  type=\"text\" value=\""+oData.notes+"\"  id=\"notes_" + (iRow+1) +"\">");
+              }                      
+          },
+          // { data: null , title: "",
+          //     fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+          //           $(nTd).html('<button onclick="delRow(' +  iRow + ')" id=\"delete_"'+iRow+'">X</button>');
+          //     }            
+          // },
+        ]
+          });
+      // $("#item_1").prop("selectedIndex",2);
+      $("#orderDetailsModal").modal('show');
+      firstTime=false;
+    }
+
+    function initOrderDetailsDatatable(){
+      var orderDetailstable = $('#orderdetails-datatable').DataTable({
+          info:false,
+          searching:false,
+          paging:false,
+          striped:true,
+      });  
+  }
+
+  function adjustCost(e){
+    var table = document.getElementById("orderdetails-datatable");
+    var sum=0
+    // console.log(table.rows.length);
+    for (var i = 1;  i< table.rows.length; i++) {
+      // console.log(i,($("#cost_"+i).val()));
+      $("#final_cost_"+i).val(($("#cost_"+i).val())-$("#discount_"+i).val());
+      sum+=parseInt($("#final_cost_"+i).val());
+      }
+      $("#total_cost").val(sum);
+    }
+    function adjustTotalCost(e){
+      var table = document.getElementById("orderdetails-datatable");
+      var sum=0
+      for (var i = 1; i<table.rows.length ; i++) {
+        sum+=parseInt($("#final_cost_"+i).val());
+      }
+      $("#total_cost").val(sum);
+    }
+
+    function saveItem(){      
+      let orderid=$("#orderid").text();
+      var table = document.getElementById("orderdetails-datatable");
+      $.get( '/orderdetailsdelete/?orderid='+orderid );
+      for (i = 1; i<table.rows.length; i++) {
+            $.get( '/orderdetail/?itemno='+ i+'&orderid='+orderid +"&itemid="+$("item_"+i).filter(":selected").val()+"&cost="+$("#cost_"+i).val()+"&discount="+$("#discount_"+i).val()+"&final_cost="+$("#final_cost_"+i).val()), function( data ) {
+          }
+        }
+
+    }
+
+  var products=null;
+  var productList="<select onchange=\"getProductDetails(ITEMID,ROWID);\" id=\"ID\"><option value=\"-1\">Select Item</option>";
+  $(document).ready(function() {
+    // initOrderDetailsDatatable();   
+      $.get('/getProducts/',function(data){
+        products = data.data;
+        // console.log(data.data);
+        data=data.data;
+        for (i in data){
+          productList += " <option value=\"" + data[i].id +  "\"> " + data[i].name + "</option>";
+        }
+        productList+="</select>";
+      });
+  } );
+
+function getProductDetails(item,rowid){
+  // if ($("#cost_"+rowid).val()>0) return;
+  console.log('getProductDetails',item,rowid)
+  for (i in products){
+    // console.log(products[i].id, item)
+    if (products[i].id == item){
+      $("#cost_"+rowid).val(products[i].price)
+      return;
+    }
+  }
+}
+function selectProduct(){
+  var table = document.getElementById("orderdetails-datatable");
+  for (i=1;i<table.rows.length;i++)
+    document.getElementById("item_"+i).selectedIndex = "2";
+  }
+  function setProduct(item){
+    let h="<select onchange=\"getProductDetails(ITEMID,ROWID);\" id=\"ID\"><option value=\"-1\">Select Item</option>";
+    for (i in products){
+      if (products[i].id == item)
+        h += " <option selected value=\"" + products[i].id +  "\"> " + products[i].name + "</option>";
+      else
+        h += " <option value=\"" + products[i].id +  "\"> " + products[i].name + "</option>";
+    }
+    h+="</select>";
+    return h;
+  }
 
 
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-    crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
-    integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
-    crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"
-    integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T"
-    crossorigin="anonymous"></script>
-  <!-- <script src="script.js"></script> -->
+
+  function addRow(id){
+    var table = $('#orderdetails-datatable').DataTable();
+    rowCount=table.rows().count();
+    data={"product": -1, "itemno": rowCount+1, "qty": 1, "cost": 0, "final_cost": 0, "discount": 0, "notes": ""}
+    // data=[1, "saree",1,5000, 100,4900,""]
+    table.row.add( data);
+    table.draw();
+  }
+ 
+  function delRow(rowid){
+    // console.log(rowid);
+    var table = $('#orderdetails-datatable').DataTable();
+    table.rows(indexes).remove().draw();
+  }
+  </script>
+  
 </body>
 
 </html>
