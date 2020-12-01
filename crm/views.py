@@ -71,10 +71,11 @@ def customer_delete(request,pk):
     return redirect('/customers/')
 
 def orders(request):
+    customers = Customer.objects.all()
     orders = Order.objects.all()
     myFilter = OrderFilter(request.GET, queryset=orders)
     orders = myFilter.qs
-    context = {'orders' : orders, 'myFilter': myFilter}
+    context = {'orders' : orders, 'myFilter': myFilter,'customers':customers}
     return render(request, 'crm/orders.html', context)
 
 def orderdetailsdelete(request):
@@ -82,7 +83,7 @@ def orderdetailsdelete(request):
     return JsonResponse({'status':200})
 
 def orderdetails(request,pk):
-    orders = OrderDetails.objects.filter(order=pk)
+    orders = OrderDetails.objects.filter(order=pk).order_by('itemno')
     data=[]
     for o in orders:
         data+=[o.json()]
@@ -90,13 +91,12 @@ def orderdetails(request,pk):
     return JsonResponse({'count':len(data),'data':data})
 
 def orderdetail(request):
+    customerid = request.GET.get('customerid')
     orderid = request.GET.get('orderid')
     itemno = request.GET.get('itemno')
     itemid = request.GET.get('itemid')
-    if orderid==0:
-        o=Order()
-        orderid=o.save()
     od = OrderDetails()
+    od.itemno=itemno
     od.qty=request.GET.get('qty',1)
     od.order=Order(orderid)
     od.product=Product(itemid)
@@ -109,12 +109,14 @@ def orderdetail(request):
 
 def createOrder(request):
     o=Order()
-    o.customer=request.GET.get('customerid')
+    o.customer=Customer(request.GET.get('customerid'))
     o.cost=request.GET.get('cost',0)
     o.paid=request.GET.get('paid',0)
     o.balance=request.GET.get('balance',0)
     o.save()
-    return JsonResponse({'status':200})
+    oid = Order.objects.latest('id').pk
+    print(oid)
+    return JsonResponse({'status':200,"orderid":oid})
 
 def updateOrder(request):
     order = Order.objects.get(id=pk)

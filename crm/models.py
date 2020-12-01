@@ -5,7 +5,7 @@ class Product(models.Model):
     name = models.CharField(max_length=200, null=True)
     qty = models.IntegerField(null=True,default=1)
     details = models.CharField(max_length=200, null=True)
-    price = models.DecimalField(max_digits=18, decimal_places=2,default=0.00,null=True)
+    price = models.IntegerField(default=0.00,null=True)
     date_created = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
