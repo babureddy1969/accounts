@@ -73,7 +73,7 @@ class OrderDetails(models.Model):
             'discount':self.discount,
             'notes':self.notes,
             'date':self.date_created,
-            "new":False
+            "new":0
         }
 class Payment(models.Model):
     order = models.ForeignKey(Order,null=True, on_delete=models.SET_NULL)
@@ -88,7 +88,7 @@ class Payment(models.Model):
             'payment_method':self.payment_method,
             'notes':self.notes,
             'date':self.create_date,
-            "new":False,
+            "new":0,
         }
 
 class Customer_dena(models.Model):

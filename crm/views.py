@@ -134,6 +134,9 @@ def createPayment(request):
     p.payment_method=request.GET.get('payment_method')
     p.notes=request.GET.get('notes')
     p.save()
+    o.paid+=int(p.amount)    
+    o.balance-=int(p.amount)    
+    o.save()
     return JsonResponse(p.json())
 def updateOrder(request):
     order = Order.objects.get(id=pk)

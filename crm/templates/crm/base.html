@@ -192,8 +192,8 @@
                 </table>
                 <button id="addPaymentButton" class="btn btn-info btn-sm" onclick="addPayment();">Add Payment</button>
                 <button class="btn btn-info btn-sm" onclick="savePayment();">Save</button>
-                <input id="total_cost" type="number" style="float:right" disabled class="btn btn-danger btn-sm" value="">
-                <label style="float:right;">Total Cost</label>
+                <input id="balance_payment" type="number" style="float:right" disabled class="btn btn-danger btn-sm" value="">
+                <label style="float:right;">Balance Payment</label>
                 
                 <input id="customerid" type="hidden" value="0">
               </div>
@@ -302,8 +302,9 @@
       $("#orderDetailsModal").modal('show');
       firstTime=false;
     }
-    function getPaymentDetails(id){
+    function getPaymentDetails(id,balance){
       $("#paymentOrderid").text(id);
+      $("#balance_payment").val(balance);
 
       if (firstTimePayment==false)$('#payment-datatable').DataTable().destroy();
       var table = $('#payment-datatable').DataTable({
@@ -338,15 +339,19 @@
           { data: 'date' ,  title: "Date", 
           },
           { data: 'new' ,  title: "New", 
+          fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+              if (oData.new==1)
+                  $(nTd).html("<input disabled style=\"width:20px;\" maxlength=\"5\"  type=\"text\" value=\""+oData.new+"\"  id=\"new_" + (iRow+1) +"\">");
+              }                      
           },
         ],
-        "columnDefs": [
-            {
-                "targets": [5 ],
-                "visible": false,
-                "searchable": false
-            },
-      ],
+        // "columnDefs": [
+        //     {
+        //         "targets": [5 ],
+        //         "visible": false,
+        //         "searchable": false
+        //     },
+      // ],
           });
       $("#paymentModal").modal('show');
       firstTimePayment=false;
@@ -417,7 +422,8 @@
       console.log(orderid,$("#orderid").val());
       var table = document.getElementById("payment-datatable");
       for (i = 1; i<table.rows.length; i++) {  
-        if ($("#new_"+i).val())      
+        console.log($("#new_"+i).val());
+        if ($("#new_"+i).val()==1)      
         $.get('/createPayment/?orderid='+$("#paymentOrderid").text()+"&payment_method="+$("#payment_method_"+i).val()+"&amount="+$("#amount_"+i).val()+"&notes="+$("#notes_"+i).val(),function(data) {
           console.log(data)
           location.reload();
@@ -488,7 +494,7 @@ function selectProduct(){
   function addPayment(id){
     var table = $('#payment-datatable').DataTable();
     rowCount=table.rows().count();
-    data={"payment_method": "Cash", "itemno": rowCount+1, "amount": 1000, "date":"","notes": "","new":true}
+    data={"payment_method": "Cash", "itemno": rowCount+1, "amount": 1000, "date":"","notes": "","new":1}
     table.row.add( data);
     table.draw();
     $("#addPaymentButton").prop("disabled","disabled");
