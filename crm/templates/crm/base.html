@@ -237,6 +237,12 @@
                   $(nTd).html("<input style=\"width:100px;\" maxlength=\"6\"  type=\"text\" value=\""+oData.notes+"\"  id=\"notes_" + (iRow+1) +"\">");
               }                      
           },
+          { data: null ,  title: "", 
+          fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+            
+                  $(nTd).html("<button class=\"btn btn-danger btn-sm\" onclick=\"delRow("+ (iRow+1) +"); \" id=\"delete_" + (iRow) +"\">X</button>");
+              }                      
+          },
         ]
           });
       // $("#item_1").prop("selectedIndex",2);
@@ -357,9 +363,14 @@ function selectProduct(){
   }
  
   function delRow(rowid){
-    // console.log(rowid);
+    console.log(rowid);
     var table = $('#orderdetails-datatable').DataTable();
-    table.rows(indexes).remove().draw();
+    $('#orderdetails-datatable').on( 'click', 'tbody tr', function () { 
+      table.row( this ).remove(); 
+      table.draw();    
+    } );
+
+    // table.row(rowid).remove()
   }
   </script>
   
