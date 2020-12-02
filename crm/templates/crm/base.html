@@ -142,7 +142,59 @@
                 </table>
                 <button class="btn btn-info btn-sm" onclick="addRow();">Add Item</button>
                 <button class="btn btn-info btn-sm" onclick="saveItem();">Save</button>
-                <input id="total_cost" type="number" style="float:right" disabled class="btn btn-warning btn-sm" value="">
+                <input id="total_cost" type="number" style="float:right" disabled class="btn btn-danger btn-sm" value="">
+                <label style="float:right;">Total Cost</label>
+                
+                <input id="customerid" type="hidden" value="0">
+              </div>
+</div>
+</div>
+</div>
+
+</div> <!-- end modal container -->
+  <!-- modal -->
+  <div class="modal fade" id="sign-out">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Want to leave?</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          Press logout to leave
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success" data-dismiss="modal">Stay Here</button>
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Logout</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- end of modal -->
+
+  <div class="container">
+    <!-- Modal -->
+    <div class="modal fade bd-example-modal-xl " tabindex="-1" id="paymentModal" role="dialog" >
+      <div class="modal-dialog modal-xl  modal-dialog-centered">
+      
+        <!-- Modal content-->
+        <div class="modal-content" >
+            <div class="modal-header">
+                <h4 class="modal-title" id="search_title">Payment for Order <span id="paymentOrderid"></span></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+              </div>
+              <div class="modal-body">
+                <!-- <input style="position: absolute;left: 50%;transform: translateX(-50%); width:300px;" type="text"  id="myCustomAuditSearchBox" placeholder="Search all fields"> -->
+
+                <table width="90%" id="payment-datatable" class="table table-bordered responsive nowrap  table-striped display ">
+                <thead>
+                </thead>
+                </table>
+                <button id="addPaymentButton" class="btn btn-info btn-sm" onclick="addPayment();">Add Payment</button>
+                <button class="btn btn-info btn-sm" onclick="savePayment();">Save</button>
+                <input id="total_cost" type="number" style="float:right" disabled class="btn btn-danger btn-sm" value="">
+                <label style="float:right;">Total Cost</label>
+                
                 <input id="customerid" type="hidden" value="0">
               </div>
 </div>
@@ -185,6 +237,7 @@
   
   <script>
     var firstTime=true;
+    var firstTimePayment=true;
     
     function getOrderDetails(id,customerid=null){
       if (id == 0) {
@@ -249,9 +302,66 @@
       $("#orderDetailsModal").modal('show');
       firstTime=false;
     }
+    function getPaymentDetails(id){
+      $("#paymentOrderid").text(id);
+
+      if (firstTimePayment==false)$('#payment-datatable').DataTable().destroy();
+      var table = $('#payment-datatable').DataTable({
+          info:false,
+          searching:false,
+          ordering:false,
+          paging:false,
+            "ajax": '/payments/?orderid='+id,
+            "columns": [
+            {data: null , title: "No.",
+            fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+              $(nTd).html("<input disabled style=\"width:30px;\" maxlength=\"6\"  type=\"text\" value=\""+(iRow+1)+"\"  id=\"itemno_" + (iRow+1) +"\">");
+              }                                  
+            }, 
+            {data: 'amount' , title: "Amount",
+            fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+              if (oData.new)
+            $(nTd).html("<input style=\"width:100px;\" maxlength=\"6\"  type=\"text\" value=\""+oData.amount+"\"  id=\"amount_" + (iRow+1) +"\">");
+            }}, 
+            { data: 'payment_method' ,  title: "Pay Method", 
+            fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+              if (oData.new)
+              $(nTd).html(paymentMethodList.replace("ITEMID",oData.product).replace("ROWID",iRow+1).replace("ID","payment_method_"+(iRow+1)));
+              }                      
+            },
+          { data: 'notes' ,  title: "Notes", 
+            fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+              if (oData.new)
+                  $(nTd).html("<input style=\"width:100px;\" maxlength=\"50\"  type=\"text\" value=\""+oData.notes+"\"  id=\"notes_" + (iRow+1) +"\">");
+              }                      
+          },
+          { data: 'date' ,  title: "Date", 
+          },
+          { data: 'new' ,  title: "New", 
+          },
+        ],
+        "columnDefs": [
+            {
+                "targets": [5 ],
+                "visible": false,
+                "searchable": false
+            },
+      ],
+          });
+      $("#paymentModal").modal('show');
+      firstTimePayment=false;
+    }
 
     function initOrderDetailsDatatable(){
       var orderDetailstable = $('#orderdetails-datatable').DataTable({
+          info:false,
+          searching:false,
+          paging:false,
+          striped:true,
+      });  
+  }
+  function initPaymentDatatable(){
+      var paymenttable = $('#payment-datatable').DataTable({
           info:false,
           searching:false,
           paging:false,
@@ -302,10 +412,24 @@
         }, 4000);
         location.reload();
     }
+    function savePayment(){      
+      let orderid=$("#orderid").text();
+      console.log(orderid,$("#orderid").val());
+      var table = document.getElementById("payment-datatable");
+      for (i = 1; i<table.rows.length; i++) {  
+        if ($("#new_"+i).val())      
+        $.get('/createPayment/?orderid='+$("#paymentOrderid").text()+"&payment_method="+$("#payment_method_"+i).val()+"&amount="+$("#amount_"+i).val()+"&notes="+$("#notes_"+i).val(),function(data) {
+          console.log(data)
+          location.reload();
+      });
+      }
+       
+    }
 
   var products=null;
   // var productList="<select onchange=\"getProductDetails(ITEMID,ROWID);\" id=\"ID\"><option value=\"-1\">Select Item</option>";
   var productList="<select id=\"ID\"><option value=\"-1\">Select Item</option>";
+    var paymentMethodList="<select id=\"ID\"><option value=\"Cash\">Cash</option><option value=\"Cheque\">Cheque</option><option value=\"Bank Transfer\">Bank Transfer</option><option value=\"Wallet\">Wallet</option><option value=\"Others\">Others</option></select>";
   $(document).ready(function() {
     // initOrderDetailsDatatable();   
       $.get('/getProducts/',function(data){
@@ -351,8 +475,6 @@ function selectProduct(){
     return h;
   }
 
-
-
   function addRow(id){
     var table = $('#orderdetails-datatable').DataTable();
     rowCount=table.rows().count();
@@ -360,8 +482,17 @@ function selectProduct(){
     // data=[1, "saree",1,5000, 100,4900,""]
     table.row.add( data);
     table.draw();
+
   }
  
+  function addPayment(id){
+    var table = $('#payment-datatable').DataTable();
+    rowCount=table.rows().count();
+    data={"payment_method": "Cash", "itemno": rowCount+1, "amount": 1000, "date":"","notes": "","new":true}
+    table.row.add( data);
+    table.draw();
+    $("#addPaymentButton").prop("disabled","disabled");
+  }
   function delRow(rowid){
     console.log(rowid);
     var table = $('#orderdetails-datatable').DataTable();
@@ -372,8 +503,6 @@ function selectProduct(){
 
     // table.row(rowid).remove()
   }
-  </script>
-  
+  </script>  
 </body>
-
 </html>

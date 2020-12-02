@@ -38,8 +38,9 @@
                       <td>{{order.balance}}</td>
                       <td>{{order.date_created}}</td>
                       <td><a class="btn btn-sm btn-info" href="javascript:getOrderDetails({{order.id}});" >Details</a></td>
+                      <td><a class="btn btn-sm btn-info" href="javascript:getPaymentDetails({{order.id}});" >Payment</a></td>
 
-                      <!-- <td><a data-toggle="modal" class="btn btn-sm btn-info" href="#orderDetailsModal" >Details</a></td> -->
+                      <!-- <td><a data-toggle="modal" class="btn btn-sm btn-info" href="#PaymentModal" >Details</a></td> -->
                       <!-- <td><a class="btn btn-info" href="{% url 'update_order' order.id %}">Details</a></td> -->
                       <!-- <td><a class="btn btn-danger" href="{% url 'delete_order' order.id %}">Delete</a></td> -->
                     </tr>

@@ -38,7 +38,9 @@ urlpatterns = [
     path('orderdetail/',views.orderdetail, name="orderdetail" ),
     path('orderdetailsdelete/',views.orderdetailsdelete, name="orderdetailsdelete" ),
     path('createOrder/',views.createOrder, name="createOrder"),
-
+    #payment
+    path('payments/', views.payments, name="payments" ),
+    path('createPayment/',views.createPayment, name="createPayment"),
     #dena pawna
     path('dena_pawna/', views.dena_Pawna, name="denapawna"),
 ]

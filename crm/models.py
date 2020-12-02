@@ -72,13 +72,24 @@ class OrderDetails(models.Model):
             'final_cost':self.final_cost,
             'discount':self.discount,
             'notes':self.notes,
-            'date':self.date_created
+            'date':self.date_created,
+            "new":False
         }
 class Payment(models.Model):
-    o = models.ForeignKey(Order,null=True, on_delete=models.SET_NULL)
+    order = models.ForeignKey(Order,null=True, on_delete=models.SET_NULL)
     amount = models.IntegerField(null=True, blank=True,default=0.00)
+    payment_method = models.CharField(null=True, blank=True,default='Cash',max_length=20)
+    notes = models.CharField(null=True, blank=True,default='Cash',max_length=50)
     create_date = models.DateTimeField(auto_now_add=True, null=True)
-
+    def json(self):
+        return{
+            'order':self.order.pk,
+            'amount':self.amount,
+            'payment_method':self.payment_method,
+            'notes':self.notes,
+            'date':self.create_date,
+            "new":False,
+        }
 
 class Customer_dena(models.Model):
     customer = models.ForeignKey(Customer, null= True, on_delete= models.SET_NULL)

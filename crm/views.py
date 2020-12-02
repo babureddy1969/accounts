@@ -115,9 +115,26 @@ def createOrder(request):
     o.balance=request.GET.get('balance',0)
     o.save()
     oid = Order.objects.latest('id').pk
-    print(oid)
+    # print(oid)
     return JsonResponse({'status':200,"orderid":oid})
 
+def payments(request):
+    p=Payment.objects.filter(order__id=request.GET.get('orderid'))
+    #print(p)
+    data=[]
+    for d in p:        
+        data+=[d.json()]
+    return JsonResponse({'count':len(data),'data':data})
+
+def createPayment(request):
+    o=Order.objects.get(pk=request.GET.get('orderid'))
+    p=Payment()
+    p.order=o
+    p.amount=request.GET.get('amount')
+    p.payment_method=request.GET.get('payment_method')
+    p.notes=request.GET.get('notes')
+    p.save()
+    return JsonResponse(p.json())
 def updateOrder(request):
     order = Order.objects.get(id=pk)
     od=OrderDetails.objects.filter(order=pk).annotate(a=Sum('final_cost'))
@@ -146,17 +163,10 @@ def suppliers(request):
 
 def supplier_slip_list(request):
     supplier_slip_list = Supplier_slip.objects.all()
-
-    # myFilter = OrderFilter(request.GET, queryset=orders)
-    # orders = myFilter.qs
-
     context = {'supplier_slip_list' : supplier_slip_list}
-
     return render(request, 'crm/supplier_slip_list.html', context)
 
-
 def createSupplier_slip(request):
-
     form = Supplier_slipForm()
     if request.method == 'POST':
         form = Supplier_slipForm(request.POST)
@@ -168,51 +178,39 @@ def createSupplier_slip(request):
             print(product_stock.quantity)
             product_stock.save()
             return redirect('/supplier_slip_list/')
-
     context = {'form': form}
     return render(request,'crm/supplier_slip_form.html', context)
 
 def updateSupplier_slip(request, pk):
-
     supplier_slip = Supplier_slip.objects.get(id=pk)
     form = Supplier_slipForm(instance=supplier_slip)
-
     if request.method == 'POST':
         form = Supplier_slipForm(request.POST, instance=supplier_slip)
         if form.is_valid():
             form.save()
             return redirect('/supplier_slip_list/')
-
     context = {'form': form}
     return render(request,'crm/supplier_slip_form.html', context)
 
 def deleteSupplier_slip(request, pk):
-
     supplier_slip = Supplier_slip.objects.get(id=pk)
     if request.method == 'POST':
         supplier_slip.delete()
         return redirect('/supplier_slip_list/')
-
     context = {'item': supplier_slip}
     return render(request, 'crm/delete_supplier_slip.html',context)
 
-
 def stocks(request):
     stock = Product_stock.objects.all()
-
     return render(request, 'crm/stock.html', {'stock' : stock})
-
 
 def stock_detail(request):
     orders = Order.objects.all()
     supplier_slip_list = Supplier_slip.objects.all()
-
     context = {'orders': orders, 'supplier_slip_list': supplier_slip_list}
-
     return render(request, 'crm/stock_detail.html', context)
 
 
 def dena_Pawna(request):
     customer_dena = Customer_dena.objects.all()
-
     return render(request, 'crm/dena_pawna.html', {'customer_dena':customer_dena})
