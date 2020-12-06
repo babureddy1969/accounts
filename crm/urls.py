@@ -33,13 +33,14 @@ urlpatterns = [
     path('orders/', views.orders, name="orders" ),
     path('order/<str:pk>', views.orderdetails, name="orderdetails" ),
     path('order_slip/',views.createOrder, name="create_order" ),
-    path('update_order/<str:pk>/',views.updateOrder, name="update_order" ),
+    # path('update_order/<str:pk>/',views.updateOrder, name="update_order" ),
     path('delete_order/<str:pk>/',views.deleteOrder, name="delete_order" ),
     path('orderdetail/',views.orderdetail, name="orderdetail" ),
     path('orderdetailsdelete/',views.orderdetailsdelete, name="orderdetailsdelete" ),
     path('createOrder/',views.createOrder, name="createOrder"),
     #payment
     path('payments/', views.payments, name="payments" ),
+    path('customer_payments/<str:customerid>', views.customer_payments, name="customer_payments" ),
     path('createPayment/',views.createPayment, name="createPayment"),
     #dena pawna
     path('dena_pawna/', views.dena_Pawna, name="denapawna"),

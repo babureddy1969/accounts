@@ -4,20 +4,19 @@ from . models import  Customer, Order, Product, Product_stock,\
 from . forms  import OrderForm, Supplier_slipForm, OrderDetailsForm
 from . filters import OrderFilter, CustomerFilter
 from django.db.models import Max, Min, Sum, Avg, Count, Value
-from django.http.response import JsonResponse
 # Create your views here.
 def home(request):
-    orders = Order.objects.all()
+    orders = Order.objects.all().order_by('-cost')
     customers = Customer.objects.all()
-    sales = Order.objects.values('cost').annotate(a=Sum('cost')).values('a')[0]['a']
-    expenses = Order.objects.values('cost').annotate(a=Sum('cost')).values('a')[0]['a']
+    sales = Order.objects.all().aggregate(Sum('cost'))['cost__sum']
+    balance = Order.objects.all().aggregate(Sum('balance'))['balance__sum']
     users = Customer.objects.all().count()
     visitors = Customer.objects.all().count()
-    payments = Payment.objects.all().order_by('-create_date')
+    payments = Order.objects.filter(balance__gt=0).order_by('-balance')
 
     context = {'orders': orders, 'customers': customers, 'sales': "{:,.0f}".format(sales) , 
-        'expenses': "{:,.0f}".format(expenses) , 'users': users, 'visitors': visitors,'payments':payments}
-
+        'balance': "{:,.0f}".format(balance) , 'users': users, 'visitors': visitors,'payments':payments}
+    print(context)
     return render(request, 'crm/dashboard.html',context)
 
 def products(request):
@@ -41,6 +40,7 @@ def customer_det(request,pk):
 def manager(request):
     return redirect('/admin/')
 
+
 def savecustomer(request):
     id = request.GET.get("id",None)
     c = Customer()
@@ -56,14 +56,9 @@ def savecustomer(request):
 
 def customer_detail(request,pk):
     customer = Customer.objects.get(id=pk)
-
-    orders = customer.order_set.all()
-    order_count = orders.count()
-
-    myFilter = CustomerFilter(request.GET, queryset=orders)
-    orders = myFilter.qs
-
-    context = {'customer': customer, 'orders':orders,'order_count':order_count, 'myFilter': myFilter}
+    orders = Order.objects.filter(category=request.GET.get('category'))
+    category_name = 'Saree' if request.GET.get('category')=='S' else 'Jewellery' 
+    context = {'customer': customer, 'orders':orders,'order_count':len(orders),'category':category_name}
     return render(request, 'crm/customer_detail.html', context) 
 
 def customer_delete(request,pk):
@@ -87,7 +82,7 @@ def orderdetails(request,pk):
     data=[]
     for o in orders:
         data+=[o.json()]
-    # print(data)
+    print(data)
     return JsonResponse({'count':len(data),'data':data})
 
 def orderdetail(request):
@@ -104,7 +99,7 @@ def orderdetail(request):
     od.discount=request.GET.get('discount',0)
     od.final_cost=request.GET.get('final_cost')
     od.notes=request.GET.get('notes','')
-    od.save()
+    od.save()    
     return JsonResponse({'status':200})
 
 def createOrder(request):
@@ -113,10 +108,19 @@ def createOrder(request):
     o.cost=request.GET.get('cost',0)
     o.paid=request.GET.get('paid',0)
     o.balance=request.GET.get('balance',0)
+    o.qty=request.GET.get('qty',1)
     o.save()
     oid = Order.objects.latest('id').pk
     # print(oid)
     return JsonResponse({'status':200,"orderid":oid})
+
+def customer_payments(request,customerid):
+    p=Payment.objects.filter(order__customer__id=customerid)
+    #print(p)
+    data=[]
+    for d in p:        
+        data+=[d.json()]
+    return JsonResponse({'count':len(data),'data':data})
 
 def payments(request):
     p=Payment.objects.filter(order__id=request.GET.get('orderid'))
@@ -138,15 +142,28 @@ def createPayment(request):
     o.balance-=int(p.amount)    
     o.save()
     return JsonResponse(p.json())
-def updateOrder(request):
-    order = Order.objects.get(id=pk)
-    od=OrderDetails.objects.filter(order=pk).annotate(a=Sum('final_cost'))
-    p=Payment.objects.filter(o=pk).annotate(a=Sum('amount'))
-    if od: order.cost = od.a
-    if p: order.paid = p.a
-    order.balance=order.cost-order.paid
-    order.save()
-    return redirect('/orders/')
+# def updateOrder(request):
+#     order = Order.objects.get(id=pk)
+#     od=OrderDetails.objects.filter(order=pk).annotate(a=Sum('final_cost'))
+#     q=OrderDetails.objects.filter(order=pk).annotate(a=Sum('qty'))
+#     p=Payment.objects.filter(o=pk).annotate(a=Sum('amount'))
+#     if od: order.cost = od.a
+#     if p: order.paid = p.a
+#     if q: order.qty = q.a
+#     order.balance=order.cost-order.paid
+#     order.save()
+#     return redirect('/orders/')
+# def update_order(pk):
+#     order = Order.objects.get(id=pk)
+#     od=OrderDetails.objects.filter(order=pk).annotate(a=Sum('final_cost'))
+#     q=OrderDetails.objects.filter(order=pk).annotate(a=Sum('qty'))
+#     p=Payment.objects.filter(o=pk).annotate(a=Sum('amount'))
+#     if od: order.cost = od.a
+#     if p: order.paid = p.a
+#     if q: order.qty = q.a
+#     order.balance=order.cost-order.paid
+#     order.save()
+#     return {'status':200}
 
 def deleteOrder(request, pk):
 

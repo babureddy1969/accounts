@@ -1,6 +1,5 @@
 from django.db import models
-
-
+from datetime import datetime, date, timedelta
 class Product(models.Model):
     name = models.CharField(max_length=200, null=True)
     qty = models.IntegerField(null=True,default=1)
@@ -36,21 +35,25 @@ class Customer(models.Model):
         return self.name
 
     def json(self):
-        return {'name':self.name,'phone':self.phone,'address':self.address}
+        return {'name':self.name,'phone':self.phone,'address':self.address,'date':datetime.strftime(self.create_date,'%d-%m-%Y %H:%M'),}
 
 class Order(models.Model):
     customer = models.ForeignKey(Customer, null= True, on_delete= models.SET_NULL)
+    category = models.CharField(max_length=1,default='S',null=True)
     cost = models.IntegerField(null=True, blank=True,default=0)
     paid = models.IntegerField(null=True, blank=True,default=0)
     balance = models.IntegerField(null=True, blank=True,default=0)
+    qty = models.IntegerField(null=True, blank=True,default=1)
     date_created = models.DateTimeField(auto_now_add=True, null=True)
     def json(self):
         return {
             'customer':self.customer.json(),
+            'category':self.category,
             'cost':self.cost,
             'paid':self.paid,
             'balance':self.balance,
-            'date':self.date_created,
+            'qty':self.qty,
+            'date':datetime.strftime(self.date_created,'%d-%m-%Y %H:%M'),
         }
 class OrderDetails(models.Model):
     order = models.ForeignKey(Order, null= True, on_delete= models.SET_NULL)
@@ -72,7 +75,7 @@ class OrderDetails(models.Model):
             'final_cost':self.final_cost,
             'discount':self.discount,
             'notes':self.notes,
-            'date':self.date_created,
+            'date':datetime.strftime(self.date_created,'%d-%m-%Y %H:%M'),
             "new":0
         }
 class Payment(models.Model):
@@ -87,7 +90,7 @@ class Payment(models.Model):
             'amount':self.amount,
             'payment_method':self.payment_method,
             'notes':self.notes,
-            'date':self.create_date,
+            'date':datetime.strftime(self.create_date,'%d-%m-%Y %H:%M'),
             "new":0,
         }
 

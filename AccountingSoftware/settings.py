@@ -25,7 +25,7 @@ SECRET_KEY = 'ics(7o7z%z8&mwm$pe4y_*%=36d_2pmwc@@k%q7f0j_=xggn%2'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition

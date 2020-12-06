@@ -15,12 +15,13 @@
           <div class="row align-items-center">
             <div class="col mt-3 mr-3">
               
-              <h3 class="text-muted text-center mb-3">Orders for<span class="text-danger"> {{customer.name}},  {{customer.address}}, {{customer.phone}} </span><a href="javascript:getOrderDetails(0,{{customer.id}});" class="btn btn-success btn-sm"> Add</a></h3>
+              <h3 class="text-muted text-center mb-3"><span>{{category}} </span>Orders for<span class="text-danger"> {{customer.name}},  {{customer.address}}, {{customer.phone}} </span><a href="javascript:getOrderDetails(0,{{customer.id}});" class="btn btn-success btn-sm"> Add</a></h3>
               <!-- <h3 class="text-muted text-center mb-3">Orders&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:getOrderDetails(0);" class="btn btn-success btn-sm"> Add</a></h3>             -->
               <table class="table center table-striped bg-light text-center">
                 <thead>
                   <tr class="text-muted">
                     <th>Order No.</th>
+                    <!-- <th>Qty</th> -->
                     <th>Cost</th>
                     <th>Paid</th>
                     <th>Balance</th>
@@ -33,16 +34,15 @@
                   {%  for order in orders %}
                     <tr>
                       <td>{{order.id}}</td>
+                      <!-- <td>{{order.qty}}</td> -->
                       <td>{{order.cost}}</td>
                       <td>{{order.paid}}</td>
-                      <td>{{order.balance}}</td>
+                      {% if order.balance %}<td class="text-danger">{{order.balance}}</td>
+                      {% else %}<td>{{order.balance}}</td> 
+                      {% endif %}
                       <td>{{order.date_created}}</td>
                       <td><a class="btn btn-sm btn-info" href="javascript:getOrderDetails({{order.id}});" >Details</a></td>
                       <td><a class="btn btn-sm btn-info" href="javascript:getPaymentDetails({{order.id}},{{order.balance}});" >Payment</a></td>
-
-                      <!-- <td><a data-toggle="modal" class="btn btn-sm btn-info" href="#PaymentModal" >Details</a></td> -->
-                      <!-- <td><a class="btn btn-info" href="{% url 'update_order' order.id %}">Details</a></td> -->
-                      <!-- <td><a class="btn btn-danger" href="{% url 'delete_order' order.id %}">Delete</a></td> -->
                     </tr>
                   {% endfor %}
 

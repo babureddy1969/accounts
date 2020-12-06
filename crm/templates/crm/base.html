@@ -44,16 +44,17 @@
 
           <!-- sidebar -->
           <div class="col-xl-2 col-lg-3 col-md-4 sidebar fixed-top">
-            <a href="#" class="navbar-brand text-white d-block mx-auto text-center py-3 mb-4 bottom-border">
+            <a href="/" class="navbar-brand text-white d-block mx-auto text-center py-3 mb-4 bottom-border">
               Bindu's Boutique</a>
             <ul class="navbar-nav flex-column mt-4">
               <li class="nav-item"><a href="{% url 'dashboard' %}" class="nav-link text-white p-3 mb-2 current">Dashboard</a></li>
               <li class="nav-item"><a href="{% url 'customers' %}" class="nav-link text-white p-3 mb-2 sidebar-link">Customers</a></li>
-              <li class="nav-item"><a href="{% url 'products' %}" class="nav-link text-white p-3 mb-2 sidebar-link">Products</a></li>
+              <!-- <li class="nav-item"><a href="{% url 'products' %}" class="nav-link text-white p-3 mb-2 sidebar-link">Products</a></li> -->
               <li class="nav-item"><a href="{% url 'orders' %}" class="nav-link text-white p-3 mb-2 sidebar-link">Orders</a></li>
-              <li class="nav-item"><a href="{% url 'stocks' %}" class="nav-link text-white p-3 mb-2 sidebar-link">Stock Account</a></li>
-              <li class="nav-item"><a href="{% url 'suppliers' %}" class="nav-link text-white p-3 mb-2 sidebar-link">Supplier</a></li>
+              <!-- <li class="nav-item"><a href="{% url 'stocks' %}" class="nav-link text-white p-3 mb-2 sidebar-link">Stock Account</a></li> -->
+              <!-- <li class="nav-item"><a href="{% url 'suppliers' %}" class="nav-link text-white p-3 mb-2 sidebar-link">Supplier</a></li> -->
               <li class="nav-item"><a href="{% url 'manager' %}" target="_blank" class="nav-link text-white p-3 mb-2 sidebar-link">Manager</a></li>
+              <!-- <li class="nav-item"><a href="/logout" class="nav-link text-white p-3 mb-2 sidebar-link">Logout</a></li> -->
               <!-- <li class="nav-item"><a href="{% url 'supplier_slip_list' %}" class="nav-link text-white p-3 mb-2 sidebar-link">Supplier lists</a></li> -->
             </ul>
           </div>
@@ -143,7 +144,7 @@
                 <button class="btn btn-info btn-sm" onclick="addRow();">Add Item</button>
                 <button class="btn btn-info btn-sm" onclick="saveItem();">Save</button>
                 <input id="total_cost" type="number" style="float:right" disabled class="btn btn-danger btn-sm" value="">
-                <label style="float:right;">Total Cost</label>
+                <input style="float:right;width:100px;font-weight: bold;background: white;" disabled value="Total Cost">
                 
                 <input id="customerid" type="hidden" value="0">
               </div>
@@ -193,7 +194,7 @@
                 <button id="addPaymentButton" class="btn btn-info btn-sm" onclick="addPayment();">Add Payment</button>
                 <button class="btn btn-info btn-sm" onclick="savePayment();">Save</button>
                 <input id="balance_payment" type="number" style="float:right" disabled class="btn btn-danger btn-sm" value="">
-                <label style="float:right;">Balance Payment</label>
+                <input style="float:right;width:100px;font-weight: bold;background: white;" disabled value="Balance">
                 
                 <input id="customerid" type="hidden" value="0">
               </div>
@@ -296,7 +297,20 @@
                   $(nTd).html("<button class=\"btn btn-danger btn-sm\" onclick=\"delRow("+ (iRow+1) +"); \" id=\"delete_" + (iRow) +"\">X</button>");
               }                      
           },
-        ]
+          { data: 'new' ,  title: "New", 
+          fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+              if (oData.new==1)
+                  $(nTd).html("<input disabled style=\"width:20px;\" maxlength=\"5\"  type=\"text\" value=\""+oData.new+"\"  id=\"new_" + (iRow+1) +"\">");
+              }                      
+          },
+        ],
+        "columnDefs": [
+            {
+                "targets": [8 ],
+                "visible": false,
+                "searchable": true
+            },
+      ],
           });
       // $("#item_1").prop("selectedIndex",2);
       $("#orderDetailsModal").modal('show');
@@ -338,20 +352,20 @@
           },
           { data: 'date' ,  title: "Date", 
           },
-          { data: 'new' ,  title: "New", 
+          { data: 'new' ,  title: "", 
           fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
               if (oData.new==1)
-                  $(nTd).html("<input disabled style=\"width:20px;\" maxlength=\"5\"  type=\"text\" value=\""+oData.new+"\"  id=\"new_" + (iRow+1) +"\">");
+                  $(nTd).html("<input  type=\"hidden\" value=\""+oData.new+"\"  id=\"new_" + (iRow+1) +"\">");
               }                      
           },
         ],
-        // "columnDefs": [
-        //     {
-        //         "targets": [5 ],
-        //         "visible": false,
-        //         "searchable": false
-        //     },
-      // ],
+        "columnDefs": [
+            {
+                "targets": [5 ],
+                "visible": false,
+                "searchable": false
+            },
+      ],
           });
       $("#paymentModal").modal('show');
       firstTimePayment=false;
@@ -396,7 +410,7 @@
 
     function saveItem(){      
       let orderid=$("#orderid").text();
-      console.log(orderid,$("#customerid").val());
+      // console.log(orderid,$("#customerid").val());
       if (orderid == "New Order") {
         orderid=0;
         $.get('/createOrder/?customerid='+$("#customerid").val()+"&cost="+$("#total_cost").val()+"&paid=0&balance="+$("#total_cost").val(),function(data) {
@@ -404,28 +418,27 @@
           orderid=data.orderid;
         });
       }
-      // console.log($("#item_1").val());
-      var table = document.getElementById("orderdetails-datatable");
-        $.get( '/orderdetailsdelete/?orderid='+orderid,function(data) {
-        for (i = 1; i<table.rows.length; i++) {
+      var table = $('#orderdetails-datatable').DataTable();
+      for (i = 1; i< table.data().count()+1 ; i++) {  
+          if(table.row(i-1).data()['new']==1)      
             $.get( '/orderdetail/?itemno='+ i+'&orderid='+orderid+"&customerid=" + $("#customerid").val() +"&itemid="+$("#item_"+i).val()+"&cost="+$("#cost_"+i).val()+"&discount="+$("#discount_"+i).val()+"&final_cost="+$("#final_cost_"+i).val()), function( data ) {
           }
         }        
-      });
         setTimeout(function(){
             $("#orderDetailsModal").modal("hide");
         }, 4000);
         location.reload();
-    }
+  }
     function savePayment(){      
-      let orderid=$("#orderid").text();
-      console.log(orderid,$("#orderid").val());
-      var table = document.getElementById("payment-datatable");
-      for (i = 1; i<table.rows.length; i++) {  
-        console.log($("#new_"+i).val());
-        if ($("#new_"+i).val()==1)      
-        $.get('/createPayment/?orderid='+$("#paymentOrderid").text()+"&payment_method="+$("#payment_method_"+i).val()+"&amount="+$("#amount_"+i).val()+"&notes="+$("#notes_"+i).val(),function(data) {
-          console.log(data)
+      let orderid=$("#paymentOrderid").text();
+      var table = $('#payment-datatable').DataTable()//.row(1).data();
+      // console.log(table.data().count())
+
+      for (i = 0; i< table.data().count() ; i++) {  
+        // console.log(table.row(i).data())
+        if(table.row(i).data()['new']==1)      
+        $.get('/createPayment/?orderid='+orderid+"&payment_method="+table.row(i).data()['payment_method']+"&amount="+table.row(i).data()['amount']+"&notes="+table.row(i).data()['notes'],function(data) {
+          // console.log(data)
           location.reload();
       });
       }
@@ -484,7 +497,7 @@ function selectProduct(){
   function addRow(id){
     var table = $('#orderdetails-datatable').DataTable();
     rowCount=table.rows().count();
-    data={"product": -1, "itemno": rowCount+1, "qty": 1, "cost": 0, "final_cost": 0, "discount": 0, "notes": ""}
+    data={"product": -1, "itemno": rowCount+1, "qty": 1, "cost": 0, "final_cost": 0, "discount": 0, "notes": "","new":1}
     // data=[1, "saree",1,5000, 100,4900,""]
     table.row.add( data);
     table.draw();
@@ -497,7 +510,7 @@ function selectProduct(){
     data={"payment_method": "Cash", "itemno": rowCount+1, "amount": 1000, "date":"","notes": "","new":1}
     table.row.add( data);
     table.draw();
-    $("#addPaymentButton").prop("disabled","disabled");
+    // $("#addPaymentButton").prop("disabled","disabled");
   }
   function delRow(rowid){
     console.log(rowid);

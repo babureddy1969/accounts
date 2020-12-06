@@ -29,7 +29,9 @@
                       <td>{{customer.date_created}}</td>
                       <!-- <td><a class="btn btn-sm btn-info" href="javascript:getOrderDetails({{customer.id}});" >Orders</a></td> -->
 
-                      <td><a href="{% url 'customer_detail' customer.id %}" class="btn btn-sm btn-info">Orders</a></td>
+                      <td><a href="{% url 'customer_detail' customer.id %}?category=J" class="btn btn-sm btn-info">Jewellery</a></td>
+                      <td><a href="{% url 'customer_detail' customer.id %}?category=S" class="btn btn-sm btn-info">Saree</a></td>
+                      <!-- <td><a href="{% url 'customer_payments' customer.id %}" class="btn btn-sm btn-info">Payments</a></td> -->
                       <!-- <td><button  onclick="javascript : editCustomer({{customer.id}});" class="btn btn-sm btn-info ">Edit</button></td> -->
                     </tr>
                   {% endfor %}
