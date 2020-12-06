@@ -125,17 +125,17 @@
         <!-- Modal content-->
         <div class="modal-content" >
             <div class="modal-header">
-                <h4 class="modal-title" id="search_title">Order Details for order no. <span id="orderid"></span></h4>
+                <h4 class="modal-title" id="search_title">Order Details for order no. <span id="orderid"></span></h4><br>
                 <div style="display:none" id="customerList">
-                <select>
+                  <select>
                 {% for c in customers %}
                 <option value="{{c.id}}">{{ c.name }}</option>
                 {% endfor %}
               </select></div>
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
               </div>
               <div class="modal-body">
-                <!-- <input style="position: absolute;left: 50%;transform: translateX(-50%); width:300px;" type="text"  id="myCustomAuditSearchBox" placeholder="Search all fields"> -->
+                Todays Gold Price <input type="text" value="" id="goldPrice" placeholder="Enter Gold Price ">                
 
                 <table width="90%" id="orderdetails-datatable" class="table table-bordered responsive nowrap  table-striped display ">
                 <thead>
@@ -316,6 +316,93 @@
       $("#orderDetailsModal").modal('show');
       firstTime=false;
     }
+    function getJewelleryOrderDetails(id,customerid=null){
+      $.get('/todaysGoldPrice/',function(data) {
+          console.log(data);
+          $("#goldPrice").val(data.data)
+        });
+
+      if (id == 0) {
+        $("#orderid").text("New Order")
+      } else {
+        $("#orderid").text(id);
+      }
+      $("#customerid").val(customerid);
+
+      $("#total_cost").val(0)
+      if (firstTime==false)$('#orderdetails-datatable').DataTable().destroy();
+      var table = $('#orderdetails-datatable').DataTable({
+          info:false,
+          searching:false,
+          ordering:false,
+          paging:false,
+            "ajax": '/order/'+id,
+            // 'data':data.data,
+            "columns": [
+            {data: 'itemno' , title: "Item No",}, 
+            { data: 'product' ,  title: "Item Name", 
+            fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+              $(nTd).html(setJewelleryProduct(oData.product).replace("ITEMID",oData.product).replace("ROWID",iRow+1).replace("ID","item_"+(iRow+1)));
+              }                      
+            },
+            { data: 'wt' ,  title: "Weight", 
+            fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+              $(nTd).html("<input onfocusout=\"adjustCost(this);\"  style=\"width:100px;\" maxlength=\"6\"  type=\"text\" value=\""+oData.cost+"\"  id=\"wt_" + (iRow+1) +"\">");
+              }                      
+            },
+            { data: 'making_charges' ,  title: "Wastage %", 
+            fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+              $(nTd).html("<input onfocusout=\"adjustCost(this);\"  style=\"width:100px;\" maxlength=\"6\"  type=\"text\" value=\""+oData.cost+"\"  id=\"making_charges_" + (iRow+1) +"\">");
+              }                      
+            },
+             {data: 'qty' , title: "Qty",}, 
+             { data: 'cost' ,  title: "Price", 
+              fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+                      $(nTd).html("<input onfocusout=\"adjustCost(this);\"  style=\"width:100px;\" maxlength=\"6\"  type=\"text\" value=\""+oData.cost+"\"  id=\"cost_" + (iRow+1) +"\">");
+                  }                      
+              },
+             { data: 'discount' ,  title: "Discount", 
+              fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+                      $(nTd).html("<input onfocusout=\"adjustCost(this);\"  style=\"width:100px;\" maxlength=\"6\"  type=\"text\" value=\""+oData.discount+"\"  id=\"discount_" + (iRow+1) +"\">");
+                  }                      
+              },
+             { data: 'final_cost' ,  title: "Final Price", 
+              fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+                  $("#total_cost").val(parseInt($("#total_cost").val())+parseInt(oData.final_cost));
+                  $(nTd).html("<input style=\"width:100px;\" maxlength=\"6\"  type=\"text\" value=\""+oData.final_cost+"\"  id=\"final_cost_" + (iRow+1) +"\">");
+              }                      
+          },
+          { data: 'notes' ,  title: "Notes", 
+          fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+                  $(nTd).html("<input style=\"width:100px;\" maxlength=\"6\"  type=\"text\" value=\""+oData.notes+"\"  id=\"notes_" + (iRow+1) +"\">");
+              }                      
+          },
+          { data: null ,  title: "", 
+          fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+            
+                  $(nTd).html("<button class=\"btn btn-danger btn-sm\" onclick=\"delRow("+ (iRow+1) +"); \" id=\"delete_" + (iRow) +"\">X</button>");
+              }                      
+          },
+          { data: 'new' ,  title: "New", 
+          fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+              if (oData.new==1)
+                  $(nTd).html("<input disabled style=\"width:20px;\" maxlength=\"5\"  type=\"text\" value=\""+oData.new+"\"  id=\"new_" + (iRow+1) +"\">");
+              }                      
+          },
+        ],
+        "columnDefs": [
+            {
+                "targets": [8 ],
+                "visible": false,
+                "searchable": true
+            },
+      ],
+          });
+      // $("#item_1").prop("selectedIndex",2);
+      $("#orderDetailsModal").modal('show');
+      firstTime=false;
+    }
+
     function getPaymentDetails(id,balance){
       $("#paymentOrderid").text(id);
       $("#balance_payment").val(balance);
@@ -446,12 +533,14 @@
     }
 
   var products=null;
+  var jewelleryProducts=null;
   // var productList="<select onchange=\"getProductDetails(ITEMID,ROWID);\" id=\"ID\"><option value=\"-1\">Select Item</option>";
   var productList="<select id=\"ID\"><option value=\"-1\">Select Item</option>";
+    var jewelleryList="<select id=\"ID\"><option value=\"-1\">Select Item</option>";
     var paymentMethodList="<select id=\"ID\"><option value=\"Cash\">Cash</option><option value=\"Cheque\">Cheque</option><option value=\"Bank Transfer\">Bank Transfer</option><option value=\"Wallet\">Wallet</option><option value=\"Others\">Others</option></select>";
   $(document).ready(function() {
     // initOrderDetailsDatatable();   
-      $.get('/getProducts/',function(data){
+      $.get('/getProducts/S/',function(data){
         products = data.data;
         // console.log(data.data);
         data=data.data;
@@ -459,6 +548,15 @@
           productList += " <option value=\"" + data[i].id +  "\"> " + data[i].name + "</option>";
         }
         productList+="</select>";
+      });
+      $.get('/getProducts/J/',function(data){
+        jewelleryProducts = data.data;
+        // console.log(data.data);
+        data=data.data;
+        for (i in data){
+          jewelleryList += " <option value=\"" + data[i].id +  "\"> " + data[i].name + "</option>";
+        }
+        jewelleryList+="</select>";
       });
   } );
 
@@ -472,6 +570,20 @@ function getProductDetails(e,rowid){
     if (products[i].id == selectedItem){
       $("#cost_"+rowid).val(products[i].price);
       $("#final_cost_"+rowid).val(products[i].price);
+      adjustTotalCost(null);
+      return;
+    }
+  }
+}
+function getJewelleryProductDetails(e,rowid){
+  selectedItem = e.options[e.selectedIndex].value
+  // console.log(jewelleryList,selectedItem);
+  for (i in jewelleryProducts){
+    if (jewelleryProducts[i].id == selectedItem){
+      $("#wt_"+rowid).val(jewelleryProducts[i].wt);
+      $("#making_charges_"+rowid).val(jewelleryProducts[i].making_charges);
+      x=$("#goldPrice").val() * jewelleryProducts[i].making_charges+(1+jewelleryProducts[i].making_charges*jewelleryProducts[i].making_charges/100)
+      $("#cost_"+rowid).val(x);
       adjustTotalCost(null);
       return;
     }
@@ -493,11 +605,22 @@ function selectProduct(){
     h+="</select>";
     return h;
   }
+  function setJewelleryProduct(item){
+    let h="<select onchange=\"getJewelleryProductDetails(this,ROWID)\" id=\"ID\"><option value=\"-1\">Select Item</option>";
+    for (i in jewelleryProducts){
+      if (jewelleryProducts[i].id == item)
+        h += " <option selected value=\"" + jewelleryProducts[i].id +  "\"> " + jewelleryProducts[i].name + "</option>";
+      else
+        h += " <option value=\"" + jewelleryProducts[i].id +  "\"> " + jewelleryProducts[i].name + "</option>";
+    }
+    h+="</select>";
+    return h;
+  }
 
   function addRow(id){
     var table = $('#orderdetails-datatable').DataTable();
     rowCount=table.rows().count();
-    data={"product": -1, "itemno": rowCount+1, "qty": 1, "cost": 0, "final_cost": 0, "discount": 0, "notes": "","new":1}
+    data={"product": -1, "itemno": rowCount+1,"wt":0.00, "making_charges":22,"qty": 1, "cost": 0, "final_cost": 0, "discount": 0, "notes": "","new":1}
     // data=[1, "saree",1,5000, 100,4900,""]
     table.row.add( data);
     table.draw();

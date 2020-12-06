@@ -15,7 +15,10 @@
           <div class="row align-items-center">
             <div class="col mt-3 mr-3">
               
-              <h3 class="text-muted text-center mb-3"><span>{{category}} </span>Orders for<span class="text-danger"> {{customer.name}},  {{customer.address}}, {{customer.phone}} </span><a href="javascript:getOrderDetails(0,{{customer.id}});" class="btn btn-success btn-sm"> Add</a></h3>
+              <h3 class="text-muted text-center mb-3"><span>{{category}} </span>Orders for<span class="text-danger"> {{customer.name}},  {{customer.address}}, {{customer.phone}} </span>
+                {% if "S" in category  %}<a href="javascript:getOrderDetails(0,{{customer.id}});" class="btn btn-success btn-sm"> Add</a> {% else %}
+                <a href="javascript:getJewelleryOrderDetails(0,{{customer.id}});" class="btn btn-success btn-sm"> Add</a>{%endif%}
+              </h3>
               <!-- <h3 class="text-muted text-center mb-3">Orders&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:getOrderDetails(0);" class="btn btn-success btn-sm"> Add</a></h3>             -->
               <table class="table center table-striped bg-light text-center">
                 <thead>

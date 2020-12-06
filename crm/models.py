@@ -2,6 +2,9 @@ from django.db import models
 from datetime import datetime, date, timedelta
 class Product(models.Model):
     name = models.CharField(max_length=200, null=True)
+    category = models.CharField(max_length=1,default='S',null=True)
+    wt = models.DecimalField(max_digits=10,decimal_places=2,null=True,default=0.00)
+    making_charges = models.DecimalField(max_digits=10,decimal_places=2,null=True,default=22.00)
     qty = models.IntegerField(null=True,default=1)
     details = models.CharField(max_length=200, null=True)
     price = models.IntegerField(default=0.00,null=True)
@@ -13,6 +16,9 @@ class Product(models.Model):
         return {
             'id':self.pk,
             'name':self.name,
+            'category':self.category,
+            'wt':self.wt,
+            'making_charges':self.making_charges,
             'qty':self.qty,
             'details':self.details,
             'price':self.price,

@@ -4,6 +4,8 @@ from . models import  Customer, Order, Product, Product_stock,\
 from . forms  import OrderForm, Supplier_slipForm, OrderDetailsForm
 from . filters import OrderFilter, CustomerFilter
 from django.db.models import Max, Min, Sum, Avg, Count, Value
+from django.http.response import JsonResponse
+from bs4 import BeautifulSoup
 # Create your views here.
 def home(request):
     orders = Order.objects.all().order_by('-cost')
@@ -19,12 +21,32 @@ def home(request):
     print(context)
     return render(request, 'crm/dashboard.html',context)
 
+def todaysGoldPrice(request):
+    url="https://www.policybazaar.com/gold-rate-bangalore/"
+    import urllib3
+    hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
+       'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+       'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
+       'Accept-Encoding': 'none',
+       'Accept-Language': 'en-US,en;q=0.8',
+       'Connection': 'keep-alive'}
+    http = urllib3.PoolManager()
+    r = http.request('GET', url,headers=hdr)
+    html = r.data.decode("utf-8") 
+    open("h.html","w").write(html)
+    print(html)
+    i=html.find("<td>Today</td>")+15
+    i=html.find("<td>",i)+4
+    i1=html.find("</td>",i)
+    # print(html[i:i1])
+    return JsonResponse({'data':html[i:i1]})#
+
 def products(request):
     products = Product.objects.all()
     return render(request, 'crm/products.html',{'products' : products})
 
-def getProducts(request):
-    products = Product.objects.all()
+def getProducts(request,c):
+    products = Product.objects.filter(category=c)
     data=[]
     for p in products:
         data+=[p.json()]

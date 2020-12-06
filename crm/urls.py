@@ -5,7 +5,7 @@ from . import views
 urlpatterns = [
     path('', views.home, name="dashboard"),
     path('products/', views.products, name="products"),
-    path('getProducts/', views.getProducts, name="getProducts"),
+    path('getProducts/<str:c>/', views.getProducts, name="getProducts"),
     path('manager/', views.manager, name="manager"),
 
     #stock
@@ -44,4 +44,8 @@ urlpatterns = [
     path('createPayment/',views.createPayment, name="createPayment"),
     #dena pawna
     path('dena_pawna/', views.dena_Pawna, name="denapawna"),
+
+
+    path('todaysGoldPrice/', views.todaysGoldPrice, name="todaysGoldPrice"),
+
 ]
