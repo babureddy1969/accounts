@@ -16,8 +16,8 @@
             <div class="col mt-3 mr-3">
               
               <h3 class="text-muted text-center mb-3"><span>{{category}} </span>Orders for<span class="text-danger"> {{customer.name}},  {{customer.address}}, {{customer.phone}} </span>
-                {% if "S" in category  %}<a href="javascript:getOrderDetails(0,{{customer.id}});" class="btn btn-success btn-sm"> Add</a> {% else %}
-                <a href="javascript:getJewelleryOrderDetails(0,{{customer.id}});" class="btn btn-success btn-sm"> Add</a>{%endif%}
+                {% if "S" in category_type  %}<a href="javascript:getOrderDetails(0,{{customer.id}});" class="btn btn-success btn-sm">Add</a> {% else %}
+                <a href="javascript:getJewelleryOrderDetails(0,{{customer.id}});" class="btn btn-success btn-sm"> Add</a>{% endif %}
               </h3>
               <!-- <h3 class="text-muted text-center mb-3">Orders&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:getOrderDetails(0);" class="btn btn-success btn-sm"> Add</a></h3>             -->
               <table class="table center table-striped bg-light text-center">
@@ -44,7 +44,9 @@
                       {% else %}<td>{{order.balance}}</td> 
                       {% endif %}
                       <td>{{order.date_created}}</td>
-                      <td><a class="btn btn-sm btn-info" href="javascript:getOrderDetails({{order.id}});" >Details</a></td>
+                      {% if "S" in category_type  %}
+                      <td><a class="btn btn-sm btn-info" href="javascript:getOrderDetails({{order.id}},'{{category_type}}');" >Details</a></td>{% else %}
+                      <td><a class="btn btn-sm btn-info" href="javascript:getJewelleryOrderDetails({{order.id}},'{{category_type}}');" >Details</a></td>{% endif %}
                       <td><a class="btn btn-sm btn-info" href="javascript:getPaymentDetails({{order.id}},{{order.balance}});" >Payment</a></td>
                     </tr>
                   {% endfor %}

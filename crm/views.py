@@ -20,8 +20,9 @@ def home(request):
         'balance': "{:,.0f}".format(balance) , 'users': users, 'visitors': visitors,'payments':payments}
     print(context)
     return render(request, 'crm/dashboard.html',context)
-
 def todaysGoldPrice(request):
+    return JsonResponse({'data':todaysGoldRate()})#
+def todaysGoldRate():
     url="https://www.policybazaar.com/gold-rate-bangalore/"
     import urllib3
     hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
@@ -33,13 +34,10 @@ def todaysGoldPrice(request):
     http = urllib3.PoolManager()
     r = http.request('GET', url,headers=hdr)
     html = r.data.decode("utf-8") 
-    open("h.html","w").write(html)
-    print(html)
     i=html.find("<td>Today</td>")+15
     i=html.find("<td>",i)+4
     i1=html.find("</td>",i)
-    # print(html[i:i1])
-    return JsonResponse({'data':html[i:i1]})#
+    return html[i:i1]
 
 def products(request):
     products = Product.objects.all()
@@ -80,7 +78,7 @@ def customer_detail(request,pk):
     customer = Customer.objects.get(id=pk)
     orders = Order.objects.filter(category=request.GET.get('category'))
     category_name = 'Saree' if request.GET.get('category')=='S' else 'Jewellery' 
-    context = {'customer': customer, 'orders':orders,'order_count':len(orders),'category':category_name}
+    context = {'customer': customer, 'orders':orders,'order_count':len(orders),'category':category_name,'category_type':request.GET.get('category'),"gold_rate":todaysGoldRate()}
     return render(request, 'crm/customer_detail.html', context) 
 
 def customer_delete(request,pk):
@@ -121,12 +119,15 @@ def orderdetail(request):
     od.discount=request.GET.get('discount',0)
     od.final_cost=request.GET.get('final_cost')
     od.notes=request.GET.get('notes','')
+    # print(od.json())
     od.save()    
     return JsonResponse({'status':200})
 
 def createOrder(request):
     o=Order()
     o.customer=Customer(request.GET.get('customerid'))
+    o.gold_price=request.GET.get('gold_price',0)
+    o.category=request.GET.get('category','S')
     o.cost=request.GET.get('cost',0)
     o.paid=request.GET.get('paid',0)
     o.balance=request.GET.get('balance',0)

@@ -50,7 +50,7 @@
               <li class="nav-item"><a href="{% url 'dashboard' %}" class="nav-link text-white p-3 mb-2 current">Dashboard</a></li>
               <li class="nav-item"><a href="{% url 'customers' %}" class="nav-link text-white p-3 mb-2 sidebar-link">Customers</a></li>
               <!-- <li class="nav-item"><a href="{% url 'products' %}" class="nav-link text-white p-3 mb-2 sidebar-link">Products</a></li> -->
-              <li class="nav-item"><a href="{% url 'orders' %}" class="nav-link text-white p-3 mb-2 sidebar-link">Orders</a></li>
+              <!-- <li class="nav-item"><a href="{% url 'orders' %}" class="nav-link text-white p-3 mb-2 sidebar-link">Orders</a></li> -->
               <!-- <li class="nav-item"><a href="{% url 'stocks' %}" class="nav-link text-white p-3 mb-2 sidebar-link">Stock Account</a></li> -->
               <!-- <li class="nav-item"><a href="{% url 'suppliers' %}" class="nav-link text-white p-3 mb-2 sidebar-link">Supplier</a></li> -->
               <li class="nav-item"><a href="{% url 'manager' %}" target="_blank" class="nav-link text-white p-3 mb-2 sidebar-link">Manager</a></li>
@@ -126,16 +126,10 @@
         <div class="modal-content" >
             <div class="modal-header">
                 <h4 class="modal-title" id="search_title">Order Details for order no. <span id="orderid"></span></h4><br>
-                <div style="display:none" id="customerList">
-                  <select>
-                {% for c in customers %}
-                <option value="{{c.id}}">{{ c.name }}</option>
-                {% endfor %}
-              </select></div>
               <button type="button" class="close" data-dismiss="modal">&times;</button>
               </div>
               <div class="modal-body">
-                Todays Gold Price <input type="text" value="" id="goldPrice" placeholder="Enter Gold Price ">                
+                <!-- Todays Gold Price <input type="text" value="" id="goldPrice" placeholder="Enter Gold Price ">                 -->
 
                 <table width="90%" id="orderdetails-datatable" class="table table-bordered responsive nowrap  table-striped display ">
                 <thead>
@@ -268,7 +262,7 @@
                   // console.log("#item_"+(iRow+1),oData.product);
               }                      
             },
-             {data: 'qty' , title: "Qty",}, 
+            //  {data: 'qty' , title: "Qty",}, 
              { data: 'cost' ,  title: "Price", 
               fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
 
@@ -316,12 +310,18 @@
       $("#orderDetailsModal").modal('show');
       firstTime=false;
     }
-    function getJewelleryOrderDetails(id,customerid=null){
+    function todaysGoldPrice(i=null){
       $.get('/todaysGoldPrice/',function(data) {
-          console.log(data);
-          $("#goldPrice").val(data.data)
+          console.log(data.data);
+          table = $('#orderdetails-datatable').DataTable();
+          table.row(i).data()['gold_rate']=data.data;
         });
-
+        return 0.00 ;
+      // data=$.get('/todaysGoldPrice/');
+      // console.log(data.data);
+      // return data.data;
+    }
+    function getJewelleryOrderDetails(id,customerid=null){
       if (id == 0) {
         $("#orderid").text("New Order")
       } else {
@@ -342,20 +342,25 @@
             {data: 'itemno' , title: "Item No",}, 
             { data: 'product' ,  title: "Item Name", 
             fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
-              $(nTd).html(setJewelleryProduct(oData.product).replace("ITEMID",oData.product).replace("ROWID",iRow+1).replace("ID","item_"+(iRow+1)));
+              $(nTd).html(setJewelleryProduct(oData.product.id).replace("ITEMID",oData.product.id).replace("ROWID",iRow+1).replace("ID","item_"+(iRow+1)));
               }                      
             },
-            { data: 'wt' ,  title: "Weight", 
+            { data: 'gold_rate' ,  title: "Todays Gold Rate", 
             fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
-              $(nTd).html("<input onfocusout=\"adjustCost(this);\"  style=\"width:100px;\" maxlength=\"6\"  type=\"text\" value=\""+oData.cost+"\"  id=\"wt_" + (iRow+1) +"\">");
+              $(nTd).html("<input style=\"width:100px;\"  type=\"text\" value=\""+oData.gold_rate+"\"  id=\"gold_rate_" + (iRow+1) +"\">");
               }                      
             },
-            { data: 'making_charges' ,  title: "Wastage %", 
+            { data: 'product.wt' ,  title: "Weight", 
             fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
-              $(nTd).html("<input onfocusout=\"adjustCost(this);\"  style=\"width:100px;\" maxlength=\"6\"  type=\"text\" value=\""+oData.cost+"\"  id=\"making_charges_" + (iRow+1) +"\">");
+              $(nTd).html("<input onfocusout=\"adjustCost(this);\"  style=\"width:100px;\" maxlength=\"6\"  type=\"text\" value=\""+oData.product.wt+"\"  id=\"wt_" + (iRow+1) +"\">");
               }                      
             },
-             {data: 'qty' , title: "Qty",}, 
+            { data: 'product.making_charges' ,  title: "Wastage %", 
+            fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+              $(nTd).html("<input onfocusout=\"adjustCost(this);\"  style=\"width:100px;\" maxlength=\"6\"  type=\"text\" value=\""+oData.product.making_charges+"\"  id=\"making_charges_" + (iRow+1) +"\">");
+              }                      
+            },
+            //  {data: 'qty' , title: "Qty",}, 
              { data: 'cost' ,  title: "Price", 
               fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
                       $(nTd).html("<input onfocusout=\"adjustCost(this);\"  style=\"width:100px;\" maxlength=\"6\"  type=\"text\" value=\""+oData.cost+"\"  id=\"cost_" + (iRow+1) +"\">");
@@ -498,23 +503,30 @@
     function saveItem(){      
       let orderid=$("#orderid").text();
       // console.log(orderid,$("#customerid").val());
+      let wt=0.00
+      let category="S"
+      let gold_rate = $("#goldPrice");
       if (orderid == "New Order") {
         orderid=0;
-        $.get('/createOrder/?customerid='+$("#customerid").val()+"&cost="+$("#total_cost").val()+"&paid=0&balance="+$("#total_cost").val(),function(data) {
-          console.log(data);
+        {% if "category=J" in request.get_full_path %}
+          category="J"
+        {% endif %}
+        $.get('/createOrder/?gold_rate='+gold_rate + '&customerid='+$("#customerid").val()+"&cost="+$("#total_cost").val()+"&paid=0&balance="+$("#total_cost").val()+"&category="+category,function(data) {
+          console.log('orderid',data.orderid);
           orderid=data.orderid;
-        });
+          var table = $('#orderdetails-datatable').DataTable();
+          for (i = 1; i< table.data().count()+1 ; i++) {  
+            if(table.row(i-1).data()['new']==1)      
+              $.get( '/orderdetail/?gold_rate='+$("#gold_rate_"+i).val() + '&itemno='+ i+'&orderid='+orderid+"&customerid=" + $("#customerid").val() +"&itemid="+$("#item_"+i).val()+"&cost="+$("#cost_"+i).val()+"&discount="+$("#discount_"+i).val()+"&final_cost="+$("#final_cost_"+i).val()), function( data ) {
+                console.log(data);
+            }
+          }        
+          });
       }
-      var table = $('#orderdetails-datatable').DataTable();
-      for (i = 1; i< table.data().count()+1 ; i++) {  
-          if(table.row(i-1).data()['new']==1)      
-            $.get( '/orderdetail/?itemno='+ i+'&orderid='+orderid+"&customerid=" + $("#customerid").val() +"&itemid="+$("#item_"+i).val()+"&cost="+$("#cost_"+i).val()+"&discount="+$("#discount_"+i).val()+"&final_cost="+$("#final_cost_"+i).val()), function( data ) {
-          }
-        }        
         setTimeout(function(){
             $("#orderDetailsModal").modal("hide");
         }, 4000);
-        location.reload();
+        // location.reload();
   }
     function savePayment(){      
       let orderid=$("#paymentOrderid").text();
@@ -561,12 +573,8 @@
   } );
 
 function getProductDetails(e,rowid){
-  // if ($("#cost_"+rowid).val()>0) return;
-  // console.log('getProductDetails',e,rowid);
-  // console.log(e.options[e.selectedIndex].value);
   selectedItem = e.options[e.selectedIndex].value
   for (i in products){
-    // console.log(products[i].id, item)
     if (products[i].id == selectedItem){
       $("#cost_"+rowid).val(products[i].price);
       $("#final_cost_"+rowid).val(products[i].price);
@@ -577,13 +585,13 @@ function getProductDetails(e,rowid){
 }
 function getJewelleryProductDetails(e,rowid){
   selectedItem = e.options[e.selectedIndex].value
-  // console.log(jewelleryList,selectedItem);
   for (i in jewelleryProducts){
     if (jewelleryProducts[i].id == selectedItem){
       $("#wt_"+rowid).val(jewelleryProducts[i].wt);
       $("#making_charges_"+rowid).val(jewelleryProducts[i].making_charges);
-      x=$("#goldPrice").val() * jewelleryProducts[i].making_charges+(1+jewelleryProducts[i].making_charges*jewelleryProducts[i].making_charges/100)
-      $("#cost_"+rowid).val(x);
+      x=$("#gold_rate_"+rowid).val() * jewelleryProducts[i].making_charges+(1+jewelleryProducts[i].making_charges*jewelleryProducts[i].making_charges/100)
+      $("#cost_"+rowid).val(Math.ceil(x));
+      $("#final_cost_"+rowid).val(Math.ceil(x));
       adjustTotalCost(null);
       return;
     }
@@ -620,11 +628,10 @@ function selectProduct(){
   function addRow(id){
     var table = $('#orderdetails-datatable').DataTable();
     rowCount=table.rows().count();
-    data={"product": -1, "itemno": rowCount+1,"wt":0.00, "making_charges":22,"qty": 1, "cost": 0, "final_cost": 0, "discount": 0, "notes": "","new":1}
+    data={"product": -1, "itemno": rowCount+1,"gold_rate":{{gold_rate}},"product":{"making_charges":22,"wt":0.00, },"qty": 1, "cost": 0, "final_cost": 0, "discount": 0, "notes":"","new":1}
     // data=[1, "saree",1,5000, 100,4900,""]
     table.row.add( data);
     table.draw();
-
   }
  
   function addPayment(id){

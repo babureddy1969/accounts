@@ -46,6 +46,7 @@ class Customer(models.Model):
 class Order(models.Model):
     customer = models.ForeignKey(Customer, null= True, on_delete= models.SET_NULL)
     category = models.CharField(max_length=1,default='S',null=True)
+    gold_rate = models.DecimalField(max_digits=10,decimal_places=2,null=True,default=0.00)
     cost = models.IntegerField(null=True, blank=True,default=0)
     paid = models.IntegerField(null=True, blank=True,default=0)
     balance = models.IntegerField(null=True, blank=True,default=0)
@@ -65,6 +66,8 @@ class OrderDetails(models.Model):
     order = models.ForeignKey(Order, null= True, on_delete= models.SET_NULL)
     product = models.ForeignKey(Product, null= True, on_delete= models.SET_NULL)
     itemno = models.IntegerField(null=True,default=1)
+    gold_rate = models.DecimalField(max_digits=10,decimal_places=2,null=True,default=0.00)
+    wt = models.DecimalField(max_digits=10,decimal_places=2,null=True,default=0.00)
     qty = models.IntegerField(null=True,default=1)
     cost = models.IntegerField(null=True,default=0)
     final_cost = models.IntegerField(null=True, blank=True,default=0)
@@ -74,14 +77,17 @@ class OrderDetails(models.Model):
     def json(self):
         return {
             'order':self.order.id,
-            'product':self.product.id,
+            'product':self.product.json(),
             'itemno':self.itemno,
             'qty':self.qty,
+            'wt':self.wt,
+            'gold_rate':self.gold_rate,
             'cost':self.cost,
             'final_cost':self.final_cost,
             'discount':self.discount,
             'notes':self.notes,
-            'date':datetime.strftime(self.date_created,'%d-%m-%Y %H:%M'),
+            'date':datetime.strftime(self.date_created,'%d-%m-%Y %H:%M') if self.date_created else "",
+            # 'date':self.date_created,
             "new":0
         }
 class Payment(models.Model):
