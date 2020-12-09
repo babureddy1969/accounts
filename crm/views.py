@@ -78,6 +78,7 @@ def customer_detail(request,pk):
     customer = Customer.objects.get(id=pk)
     orders = Order.objects.filter(category=request.GET.get('category'))
     category_name = 'Saree' if request.GET.get('category')=='S' else 'Jewellery' 
+    # gold_rate = request.GET.get('gold_rate',0.00)
     context = {'customer': customer, 'orders':orders,'order_count':len(orders),'category':category_name,'category_type':request.GET.get('category'),"gold_rate":todaysGoldRate()}
     return render(request, 'crm/customer_detail.html', context) 
 
@@ -119,6 +120,7 @@ def orderdetail(request):
     od.discount=request.GET.get('discount',0)
     od.final_cost=request.GET.get('final_cost')
     od.notes=request.GET.get('notes','')
+    od.gold_rate=request.GET.get('gold_rate',0.00)
     # print(od.json())
     od.save()    
     return JsonResponse({'status':200})

@@ -256,7 +256,7 @@
             { data: 'product' ,  title: "Item Name", 
             fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
 
-              $(nTd).html(setProduct(oData.product).replace("ITEMID",oData.product).replace("ROWID",iRow+1).replace("ID","item_"+(iRow+1)));
+              $(nTd).html(setProduct(oData.product.id).replace("ITEMID",oData.product).replace("ROWID",iRow+1).replace("ID","item_"+(iRow+1)));
               // $(nTd).html(productList.replace("ITEMID",oData.product).replace("ROWID",iRow+1).replace("ID","item_"+(iRow+1)));
                   // $(nTd).html("<select id=\"item_" + (iRow+1) + "\"> <option value=\"-1\"> None</option><option value=\"1\"> Saree</option> <option value=\"2\"> Fall</option> <option value=\"3\"> Kutchu</option> <option value=\"4\"> Blouse</option> <option value=\"5\"> Stitching</option><option value=\"6\"> Others</option></select>");
                   // console.log("#item_"+(iRow+1),oData.product);
@@ -300,7 +300,7 @@
         ],
         "columnDefs": [
             {
-                "targets": [8 ],
+                "targets": [-1 ],
                 "visible": false,
                 "searchable": true
             },
@@ -309,17 +309,6 @@
       // $("#item_1").prop("selectedIndex",2);
       $("#orderDetailsModal").modal('show');
       firstTime=false;
-    }
-    function todaysGoldPrice(i=null){
-      $.get('/todaysGoldPrice/',function(data) {
-          console.log(data.data);
-          table = $('#orderdetails-datatable').DataTable();
-          table.row(i).data()['gold_rate']=data.data;
-        });
-        return 0.00 ;
-      // data=$.get('/todaysGoldPrice/');
-      // console.log(data.data);
-      // return data.data;
     }
     function getJewelleryOrderDetails(id,customerid=null){
       if (id == 0) {
@@ -500,32 +489,44 @@
       $("#total_cost").val(sum);
     }
 
+    function saveOrderDetail(category,orderid){
+      return new Promise((resolve, reject) => {
+        var table = $('#orderdetails-datatable').DataTable();
+        for (i = 1; i< table.data().count()+1 ; i++) {  
+          // if(table.row(i-1).data()['new']==1)    
+          url=  '/orderdetail/?itemno='+ i+'&orderid='+orderid+"&customerid=" + $("#customerid").val() +"&itemid="+$("#item_"+i).val()+"&cost="+$("#cost_"+i).val()+"&discount="+$("#discount_"+i).val()+"&final_cost="+$("#final_cost_"+i).val()
+          $.get( url, function( data ) {
+              console.log(data);
+          });
+        }
+      });        
+    }
+
+    function sleep (time) {
+      return new Promise((resolve) => setTimeout(resolve, time));
+    }
     function saveItem(){      
       let orderid=$("#orderid").text();
-      // console.log(orderid,$("#customerid").val());
       let wt=0.00
       let category="S"
-      let gold_rate = $("#goldPrice");
-      if (orderid == "New Order") {
-        orderid=0;
-        {% if "category=J" in request.get_full_path %}
+      {% if "category=J" in request.get_full_path %}
           category="J"
         {% endif %}
+      let gold_rate = 0.00;
+      if (category=='J') gold_rate=$("#gold_rate_"+i).val()
+      if (orderid == "New Order") {
+        orderid=0;
         $.get('/createOrder/?gold_rate='+gold_rate + '&customerid='+$("#customerid").val()+"&cost="+$("#total_cost").val()+"&paid=0&balance="+$("#total_cost").val()+"&category="+category,function(data) {
-          console.log('orderid',data.orderid);
-          orderid=data.orderid;
-          var table = $('#orderdetails-datatable').DataTable();
-          for (i = 1; i< table.data().count()+1 ; i++) {  
-            if(table.row(i-1).data()['new']==1)      
-              $.get( '/orderdetail/?gold_rate='+$("#gold_rate_"+i).val() + '&itemno='+ i+'&orderid='+orderid+"&customerid=" + $("#customerid").val() +"&itemid="+$("#item_"+i).val()+"&cost="+$("#cost_"+i).val()+"&discount="+$("#discount_"+i).val()+"&final_cost="+$("#final_cost_"+i).val()), function( data ) {
-                console.log(data);
-            }
-          }        
-          });
+            console.log('orderid',data.orderid);
+            orderid = data.orderid;
+            saveOrderDetail(category,orderid)
+        });
+      }else{
+        saveOrderDetail(category,orderid)
       }
-        setTimeout(function(){
-            $("#orderDetailsModal").modal("hide");
-        }, 4000);
+      setTimeout(function(){
+          $("#orderDetailsModal").modal("hide");
+      }, 4000);
         // location.reload();
   }
     function savePayment(){      
