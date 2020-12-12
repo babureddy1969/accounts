@@ -21,7 +21,11 @@ def home(request):
     print(context)
     return render(request, 'crm/dashboard.html',context)
 def todaysGoldPrice(request):
-    return JsonResponse({'data':todaysGoldRate()})#
+    try:
+        gold_rate=todaysGoldRate()
+    except:
+        gold_rate=0.00
+    return JsonResponse({'data':gold_rate})#
 def todaysGoldRate():
     url="https://www.policybazaar.com/gold-rate-bangalore/"
     import urllib3
@@ -78,7 +82,12 @@ def customer_detail(request,pk):
     orders = Order.objects.filter(category=request.GET.get('category'))
     category_name = 'Saree' if request.GET.get('category')=='S' else 'Jewellery' 
     # gold_rate = request.GET.get('gold_rate',0.00)
-    context = {'customer': customer, 'orders':orders,'order_count':len(orders),'category':category_name,'category_type':request.GET.get('category'),"gold_rate":todaysGoldRate()}
+    try:
+        gold_rate=todaysGoldRate()
+    except:
+        gold_rate=0.00
+
+    context = {'customer': customer, 'orders':orders,'order_count':len(orders),'category':category_name,'category_type':request.GET.get('category'),"gold_rate":gold_rate}
     return render(request, 'crm/customer_detail.html', context) 
 
 def customer_delete(request,pk):
@@ -99,8 +108,8 @@ def orderdetailsdelete(request):
     return JsonResponse({'status':200})
 def orderdetaildelete(request,pk):
     od=OrderDetails.objects.get(id=pk)
-    update_order(od.order.id)
     od.delete()
+    update_order(od.order.id)
     return JsonResponse({'status':200})
 
 def orderdetails(request,pk):
@@ -128,6 +137,7 @@ def orderdetail(request):
     od.gold_rate=request.GET.get('gold_rate',0.00)
     # print(od.json())
     od.save()    
+    update_order(orderid)
     return JsonResponse({'status':200})
 
 def createOrder(request):
@@ -180,9 +190,9 @@ def update_order(pk):
     q=OrderDetails.objects.filter(order=pk).aggregate(Sum('qty'))
     p=Payment.objects.filter(order=pk).aggregate(Sum('amount'))
     print(od,q,p)
-    order.cost = od['final_cost__sum']
-    order.paid = p['amount__sum']
-    order.qty = q['qty__sum']
+    order.cost = 0.00 if od['final_cost__sum'] == None else od['final_cost__sum'] 
+    order.paid = 0 if p['amount__sum'] == None else p['amount__sum']
+    order.qty = 0 if q['qty__sum'] == None else q['qty__sum'] 
     order.balance=order.cost-order.paid
     order.save()
     return {'status':200}
