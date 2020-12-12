@@ -76,6 +76,7 @@ class OrderDetails(models.Model):
     date_created = models.DateTimeField(auto_now_add=True, null=True)
     def json(self):
         return {
+            'id':self.pk,
             'order':self.order.id,
             'product':self.product.json(),
             'itemno':self.itemno,

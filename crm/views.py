@@ -8,13 +8,13 @@ from django.http.response import JsonResponse
 from bs4 import BeautifulSoup
 # Create your views here.
 def home(request):
-    orders = Order.objects.all().order_by('-cost')
+    orders = Order.objects.all().order_by('-cost')[:10]
     customers = Customer.objects.all()
     sales = Order.objects.all().aggregate(Sum('cost'))['cost__sum']
     balance = Order.objects.all().aggregate(Sum('balance'))['balance__sum']
     users = Customer.objects.all().count()
     visitors = Customer.objects.all().count()
-    payments = Order.objects.filter(balance__gt=0).order_by('-balance')
+    payments = Order.objects.filter(balance__gt=0).order_by('-balance')[:10]
 
     context = {'orders': orders, 'customers': customers, 'sales': "{:,.0f}".format(sales) , 
         'balance': "{:,.0f}".format(balance) , 'users': users, 'visitors': visitors,'payments':payments}
@@ -60,7 +60,6 @@ def customer_det(request,pk):
 def manager(request):
     return redirect('/admin/')
 
-
 def savecustomer(request):
     id = request.GET.get("id",None)
     c = Customer()
@@ -96,6 +95,12 @@ def orders(request):
 
 def orderdetailsdelete(request):
     OrderDetails.objects.filter(order=request.GET.get('orderid')).delete()
+    update_order(request.GET.get('orderid'))
+    return JsonResponse({'status':200})
+def orderdetaildelete(request,pk):
+    od=OrderDetails.objects.get(id=pk)
+    update_order(od.order.id)
+    od.delete()
     return JsonResponse({'status':200})
 
 def orderdetails(request,pk):
@@ -167,31 +172,22 @@ def createPayment(request):
     o.balance-=int(p.amount)    
     o.save()
     return JsonResponse(p.json())
-# def updateOrder(request):
-#     order = Order.objects.get(id=pk)
-#     od=OrderDetails.objects.filter(order=pk).annotate(a=Sum('final_cost'))
-#     q=OrderDetails.objects.filter(order=pk).annotate(a=Sum('qty'))
-#     p=Payment.objects.filter(o=pk).annotate(a=Sum('amount'))
-#     if od: order.cost = od.a
-#     if p: order.paid = p.a
-#     if q: order.qty = q.a
-#     order.balance=order.cost-order.paid
-#     order.save()
-#     return redirect('/orders/')
-# def update_order(pk):
-#     order = Order.objects.get(id=pk)
-#     od=OrderDetails.objects.filter(order=pk).annotate(a=Sum('final_cost'))
-#     q=OrderDetails.objects.filter(order=pk).annotate(a=Sum('qty'))
-#     p=Payment.objects.filter(o=pk).annotate(a=Sum('amount'))
-#     if od: order.cost = od.a
-#     if p: order.paid = p.a
-#     if q: order.qty = q.a
-#     order.balance=order.cost-order.paid
-#     order.save()
-#     return {'status':200}
+def updateOrder(request,pk):
+    return  JsonResponse(update_order(pk))
+def update_order(pk):
+    order = Order.objects.get(id=pk)
+    od=OrderDetails.objects.filter(order=pk).aggregate(Sum('final_cost'))
+    q=OrderDetails.objects.filter(order=pk).aggregate(Sum('qty'))
+    p=Payment.objects.filter(order=pk).aggregate(Sum('amount'))
+    print(od,q,p)
+    order.cost = od['final_cost__sum']
+    order.paid = p['amount__sum']
+    order.qty = q['qty__sum']
+    order.balance=order.cost-order.paid
+    order.save()
+    return {'status':200}
 
 def deleteOrder(request, pk):
-
     order = Order.objects.get(id=pk)
     if request.method == 'POST':
         order.delete()
@@ -200,11 +196,9 @@ def deleteOrder(request, pk):
     context = {'item': order}
     return render(request,'crm/delete_order.html',context)
 
-
 def suppliers(request):
     suppliers = Supplier.objects.all()
     return render(request, 'crm/suppliers.html',{'suppliers' : suppliers})
-
 
 def supplier_slip_list(request):
     supplier_slip_list = Supplier_slip.objects.all()

@@ -31,12 +31,17 @@ urlpatterns = [
 
     #order
     path('orders/', views.orders, name="orders" ),
+    # path('showorders/', views.ShowOrders, name="ShowOrders" ),
     path('order/<str:pk>', views.orderdetails, name="orderdetails" ),
     path('order_slip/',views.createOrder, name="create_order" ),
     # path('update_order/<str:pk>/',views.updateOrder, name="update_order" ),
     path('delete_order/<str:pk>/',views.deleteOrder, name="delete_order" ),
+    path('updateOrder/<str:pk>/',views.updateOrder, name="updateOrder" ),
+
+    #order detail
     path('orderdetail/',views.orderdetail, name="orderdetail" ),
     path('orderdetailsdelete/',views.orderdetailsdelete, name="orderdetailsdelete" ),
+    path('orderdetaildelete/<str:pk>/',views.orderdetaildelete, name="orderdetaildelete" ),
     path('createOrder/',views.createOrder, name="createOrder"),
     #payment
     path('payments/', views.payments, name="payments" ),

@@ -252,16 +252,12 @@
             "ajax": '/order/'+id,
             // 'data':data.data,
             "columns": [
-            {data: 'itemno' , title: "Item No",}, 
-            { data: 'product' ,  title: "Item Name", 
-            fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
-
-              $(nTd).html(setProduct(oData.product.id).replace("ITEMID",oData.product).replace("ROWID",iRow+1).replace("ID","item_"+(iRow+1)));
-              // $(nTd).html(productList.replace("ITEMID",oData.product).replace("ROWID",iRow+1).replace("ID","item_"+(iRow+1)));
-                  // $(nTd).html("<select id=\"item_" + (iRow+1) + "\"> <option value=\"-1\"> None</option><option value=\"1\"> Saree</option> <option value=\"2\"> Fall</option> <option value=\"3\"> Kutchu</option> <option value=\"4\"> Blouse</option> <option value=\"5\"> Stitching</option><option value=\"6\"> Others</option></select>");
-                  // console.log("#item_"+(iRow+1),oData.product);
-              }                      
+            {data: null , title: "Item No",
+                fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+                  $(nTd).html("<strong>"+(iRow+1) +"</strong>");
+                }                      
             },
+            { data: 'product.name' ,  title: "Item Name", },
             //  {data: 'qty' , title: "Qty",}, 
              { data: 'cost' ,  title: "Price", 
               fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
@@ -288,7 +284,7 @@
           { data: null ,  title: "", 
           fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
             
-                  $(nTd).html("<button class=\"btn btn-danger btn-sm\" onclick=\"delRow("+ (iRow+1) +"); \" id=\"delete_" + (iRow) +"\">X</button>");
+                  $(nTd).html("<button class=\"btn btn-danger btn-sm\" onclick=\"delRow("+ oData.id +"); \" id=\"delete_" + (iRow) +"\">X</button>");
               }                      
           },
           { data: 'new' ,  title: "New", 
@@ -629,7 +625,7 @@ function selectProduct(){
   function addRow(id){
     var table = $('#orderdetails-datatable').DataTable();
     rowCount=table.rows().count();
-    data={"product": -1, "itemno": rowCount+1,"gold_rate":{{gold_rate}},"product":{"making_charges":22,"wt":0.00, },"qty": 1, "cost": 0, "final_cost": 0, "discount": 0, "notes":"","new":1}
+    data={"product": -1, "itemno": rowCount+1,"gold_rate":{{gold_rate}},"product":{"making_charges":22,"wt":0.00,"name":"None", },"qty": 1, "cost": 0, "final_cost": 0, "discount": 0, "notes":"","new":1}
     // data=[1, "saree",1,5000, 100,4900,""]
     table.row.add( data);
     table.draw();
@@ -644,14 +640,16 @@ function selectProduct(){
     // $("#addPaymentButton").prop("disabled","disabled");
   }
   function delRow(rowid){
-    console.log(rowid);
+    $.get('/orderdetaildelete/' + rowid + '/',function(data){
+        console.log(rowid,data);
+      });
     var table = $('#orderdetails-datatable').DataTable();
     $('#orderdetails-datatable').on( 'click', 'tbody tr', function () { 
       table.row( this ).remove(); 
       table.draw();    
-    } );
 
     // table.row(rowid).remove()
+  });
   }
   </script>  
 </body>
