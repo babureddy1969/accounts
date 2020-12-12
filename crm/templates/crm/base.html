@@ -378,7 +378,7 @@
           { data: null ,  title: "", 
           fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
             
-                  $(nTd).html("<button class=\"btn btn-danger btn-sm\" onclick=\"delRow("+ (iRow+1) +"); \" id=\"delete_" + (oData.id) +"\">X</button>");
+                  $(nTd).html("<button class=\"btn btn-danger btn-sm\" onclick=\"delRow("+ (oData.id) +"); \" id=\"delete_" + (oData.id) +"\">X</button>");
               }                      
           },
           { data: 'new' ,  title: "New", 
@@ -437,11 +437,11 @@
           },
           { data: 'date' ,  title: "Date", 
           },
-          { data: 'new' ,  title: "", 
-          fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
-              if (oData.new==1)
-                  $(nTd).html("<input  type=\"hidden\" value=\""+oData.new+"\"  id=\"new_" + (iRow+1) +"\">");
-              }                      
+          { data: 'new' ,  title: "New", 
+          // fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+          //     if (oData.new==1)
+          //         $(nTd).html("<input  type=\"hidden\" value=\""+oData.new+"\"  id=\"new_" + (iRow+1) +"\">");
+          //     }                      
           },
         ],
         "columnDefs": [
@@ -536,14 +536,12 @@
     function savePayment(){      
       let orderid=$("#paymentOrderid").text();
       var table = $('#payment-datatable').DataTable()//.row(1).data();
-      // console.log(table.data().count())
 
-      for (i = 0; i< table.data().count() ; i++) {  
-        // console.log(table.row(i).data())
+      for (i = table.data().count()-1; i> 0 ; i--) {
         if(table.row(i).data()['new']==1)      
-        $.get('/createPayment/?orderid='+orderid+"&payment_method="+table.row(i).data()['payment_method']+"&amount="+table.row(i).data()['amount']+"&notes="+table.row(i).data()['notes'],function(data) {
-          // console.log(data)
+        $.get('/createPayment/?orderid='+orderid+"&payment_method="+$("#payment_method_"+(i+1)).val()+"&amount="+$("#amount_"+(i+1)).val()+"&notes="+$("#notes_"+(i+1)).val(),function(data) {
           location.reload();
+          return;
       });
       }
        
