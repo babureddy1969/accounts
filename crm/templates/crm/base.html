@@ -257,7 +257,11 @@
                   $(nTd).html("<strong>"+(iRow+1) +"</strong>");
                 }                      
             },
-            { data: 'product.name' ,  title: "Item Name", },
+            { data: 'product.name' ,  title: "Item Name", 
+            fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+              $(nTd).html(setProduct(oData.product.id).replace("ITEMID",oData.product.id).replace("ROWID",iRow+1).replace("ID","item_"+(iRow+1)));
+              }                      
+            },
             //  {data: 'qty' , title: "Qty",}, 
              { data: 'cost' ,  title: "Price", 
               fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
@@ -324,7 +328,11 @@
             "ajax": '/order/'+id,
             // 'data':data.data,
             "columns": [
-            {data: 'itemno' , title: "Item No",}, 
+            {data: null , title: "Item No",
+                fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
+                  $(nTd).html("<strong>"+(iRow+1) +"</strong>");
+                }                      
+            },
             { data: 'product' ,  title: "Item Name", 
             fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
               $(nTd).html(setJewelleryProduct(oData.product.id).replace("ITEMID",oData.product.id).replace("ROWID",iRow+1).replace("ID","item_"+(iRow+1)));
@@ -370,7 +378,7 @@
           { data: null ,  title: "", 
           fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
             
-                  $(nTd).html("<button class=\"btn btn-danger btn-sm\" onclick=\"delRow("+ (iRow+1) +"); \" id=\"delete_" + (iRow) +"\">X</button>");
+                  $(nTd).html("<button class=\"btn btn-danger btn-sm\" onclick=\"delRow("+ (iRow+1) +"); \" id=\"delete_" + (oData.id) +"\">X</button>");
               }                      
           },
           { data: 'new' ,  title: "New", 
