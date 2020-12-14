@@ -38,16 +38,14 @@
                     <tr>
                       <td>{{order.id}}</td>
                       <!-- <td>{{order.qty}}</td> -->
-                      <td>{{order.cost}}</td>
+                      {% if "S" in category_type  %}
+                      <td><a class="btn btn-info" href="javascript:getOrderDetails({{order.id}},'{{category_type}}');" >{{order.cost}}</a></td>{% else %}
+                      <td><a class="btn btn-info" href="javascript:getJewelleryOrderDetails({{order.id}},'{{category_type}}');" >{{order.cost}}</a></td>{% endif %}
                       <td>{{order.paid}}</td>
-                      {% if order.balance %}<td class="text-danger">{{order.balance}}</td>
+                      {% if order.balance %}<td class="text-danger"><a class="btn btn-danger" href="javascript:getPaymentDetails({{order.id}},{{order.balance}});" >{{order.balance}}</a></td>
                       {% else %}<td>{{order.balance}}</td> 
                       {% endif %}
                       <td>{{order.date_created|date:"d-M-Y"}}</td>
-                      {% if "S" in category_type  %}
-                      <td><a class="btn btn-sm btn-info" href="javascript:getOrderDetails({{order.id}},'{{category_type}}');" >Details</a></td>{% else %}
-                      <td><a class="btn btn-sm btn-info" href="javascript:getJewelleryOrderDetails({{order.id}},'{{category_type}}');" >Details</a></td>{% endif %}
-                      <td><a class="btn btn-sm btn-info" href="javascript:getPaymentDetails({{order.id}},{{order.balance}});" >Payment</a></td>
                     </tr>
                   {% endfor %}
 
