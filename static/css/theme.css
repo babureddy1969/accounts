@@ -48,7 +48,7 @@ File: App Css
   display: block;
 }
 .font-family-default {
-	font-family: "Baloo Paaji 2",cursive;
+	font-family: "Baloo Paaji 2";
     font-weight: 600;
 }
 .metismenu .mm-collapsing {
@@ -388,7 +388,7 @@ body.enable-vertical-menu .menu-overlay {
 
 /* 5. Helper */
 .font-family-secondary {
-  font-family: "Baloo Paaji 2", cursive;
+  font-family: "Baloo Paaji 2";
 }
 
 .font-size-10 {
@@ -721,7 +721,7 @@ body.enable-vertical-menu .menu-overlay {
 
 /* 9. Sweetalert */
 .swal2-modal {
-  font-family: "Baloo Paaji 2", cursive;
+  font-family: "Baloo Paaji 2";
   -webkit-box-shadow: 0 10px 33px rgba(0, 0, 0, 0.1);
           box-shadow: 0 10px 33px rgba(0, 0, 0, 0.1);
 }
@@ -815,7 +815,7 @@ body.enable-vertical-menu .menu-overlay {
 
 /* 10. Morris */
 .morris-chart text {
-  font-family: "Baloo Paaji 2", cursive !important;
+  font-family: "Baloo Paaji 2" !important;
 }
 
 .morris-hover {
@@ -830,13 +830,13 @@ body.enable-vertical-menu .menu-overlay {
   padding: 10px 12px;
   background: #222a3e;
   color: #fff;
-  font-family: "Baloo Paaji 2", cursive;
+  font-family: "Baloo Paaji 2";
 }
 
 .morris-hover.morris-default-style .morris-hover-row-label {
   font-weight: bold;
   margin: 0.25em 0;
-  font-family: "Baloo Paaji 2", cursive;
+  font-family: "Baloo Paaji 2";
 }
 
 .morris-hover.morris-default-style .morris-hover-point {
@@ -863,12 +863,12 @@ body.enable-vertical-menu .menu-overlay {
   color: #fff !important;
   font-size: 12px !important;
   line-height: 18px !important;
-  font-family: "Baloo Paaji 2", cursive !important;
+  font-family: "Baloo Paaji 2" !important;
   font-weight: 500 !important;
 }
 
 [data-plugin="knob"] {
-  font-family: "Baloo Paaji 2", cursive !important;
+  font-family: "Baloo Paaji 2" !important;
   font-weight: 500 !important;
 }
 
@@ -1106,7 +1106,7 @@ div.dt-button-info h2 {
   border: none;
   background: #343a40;
   color: #f8f9fa;
-  font-family: "Baloo Paaji 2", cursive;
+  font-family: "Baloo Paaji 2";
   font-size: 0.935rem;
   padding: 5px 8px;
 }
@@ -1294,7 +1294,7 @@ div.dt-button-info h2 {
 
 /* 17. Daterange */
 .daterangepicker {
-  font-family: "Baloo Paaji 2", cursive;
+  font-family: "Baloo Paaji 2";
   border: 0 solid #e9edf3;
   -webkit-box-shadow: 0 4px 18px rgba(0, 0, 0, 0.11);
           box-shadow: 0 4px 18px rgba(0, 0, 0, 0.11);

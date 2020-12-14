@@ -1,7 +1,6 @@
 from django.urls import path
 from . import views
 
-
 urlpatterns = [
     path('', views.home, name="dashboard"),
     path('products/', views.products, name="products"),
@@ -15,7 +14,7 @@ urlpatterns = [
     #customer
     path('customers/', views.customers, name="customers"),
     path('customer_det/<str:pk>/',views.customer_det, name="customer_det"),
-    path('customer/<str:pk>/',views.customer_detail, name="customer_detail"),
+    path('customer_detail/<str:pk>/',views.customer_detail, name="customer_detail"),
     path('savecustomer/',views.savecustomer, name="savecustomer"),
     path('customer_delete/<str:pk>/',views.customer_delete, name="customer_delete"),
 
@@ -49,7 +48,6 @@ urlpatterns = [
     path('createPayment/',views.createPayment, name="createPayment"),
     #dena pawna
     path('dena_pawna/', views.dena_Pawna, name="denapawna"),
-
 
     path('todaysGoldPrice/', views.todaysGoldPrice, name="todaysGoldPrice"),
 

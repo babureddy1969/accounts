@@ -55,7 +55,18 @@ def getProducts(request,c):
     return JsonResponse({'count':len(data),'data' : data})
 
 def customers(request):
-    customers = Customer.objects.all()
+    customers = Customer.objects.all().order_by("name")
+    order_summary = Order.objects.values('customer__id','customer__name','customer__phone','customer__address','category').annotate(a=Sum('cost')).values('a','customer__id','customer__name','customer__phone','customer__address','category')
+    for c in customers:
+        c.j='-'
+        c.s='-'
+        for o in order_summary:
+            if c.id == o['customer__id']:
+                if o['category']=='J' : c.j=o['a']
+                if o['category']=='S' : c.s=o['a']
+
+    print(customers)
+        
     return render(request, 'crm/customers.html',{'customers' : customers})
 
 def customer_det(request,pk):
@@ -79,7 +90,7 @@ def savecustomer(request):
 
 def customer_detail(request,pk):
     customer = Customer.objects.get(id=pk)
-    orders = Order.objects.filter(category=request.GET.get('category'))
+    orders = Order.objects.filter(customer__id=pk,category=request.GET.get('category'))
     category_name = 'Saree' if request.GET.get('category')=='S' else 'Jewellery' 
     # gold_rate = request.GET.get('gold_rate',0.00)
     try:
@@ -88,6 +99,7 @@ def customer_detail(request,pk):
         gold_rate=0.00
 
     context = {'customer': customer, 'orders':orders,'order_count':len(orders),'category':category_name,'category_type':request.GET.get('category'),"gold_rate":gold_rate}
+    print(context)
     return render(request, 'crm/customer_detail.html', context) 
 
 def customer_delete(request,pk):

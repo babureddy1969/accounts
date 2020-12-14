@@ -6,12 +6,12 @@
     <div class="container-fluid">
       <div class="row mb-5">
         <div class="col-xl-10 col-lg-9 col-md-8 ml-auto mt-5">
-          <div class="card card-body">
+          <!-- <div class="card card-body"> -->
             <!-- <form action="" method="get">
               {{myFilter.form}}
               <button class="btn btn-primary" type="submit">Search</button>
             </form> -->
-          </div>
+          <!-- </div> -->
           <div class="row align-items-center">
             <div class="col mt-3 mr-3">
               
@@ -43,7 +43,7 @@
                       {% if order.balance %}<td class="text-danger">{{order.balance}}</td>
                       {% else %}<td>{{order.balance}}</td> 
                       {% endif %}
-                      <td>{{order.date_created}}</td>
+                      <td>{{order.date_created|date:"d-M-Y"}}</td>
                       {% if "S" in category_type  %}
                       <td><a class="btn btn-sm btn-info" href="javascript:getOrderDetails({{order.id}},'{{category_type}}');" >Details</a></td>{% else %}
                       <td><a class="btn btn-sm btn-info" href="javascript:getJewelleryOrderDetails({{order.id}},'{{category_type}}');" >Details</a></td>{% endif %}

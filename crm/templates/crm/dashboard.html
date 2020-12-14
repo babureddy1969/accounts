@@ -101,13 +101,13 @@
         <div class="col-xl-10 col-lg-9 col-md-8 ml-auto">
           <div class="row align-items-center">
             <div class="col-xl-6 col-12 mb-4 mb-xl-0">
-              <h3 class="text-muted text-center mb-3"><span class="text-success">Orders</span></h3>
+              <h3 class="text-muted text-center mb-3"><span class="text-success">Pending Orders</span></h3>
               <table class="table table-striped bg-light text-center">
                 <thead>
                   <tr class="text-muted">
-                    <th>Customer</th>
+                    <th>Name</th>
                     <th>Location</th>
-                    <th>Qty</th>
+                    <th>Phone</th>
                     <th>Amount</th>
                   </tr>
                 </thead>
@@ -116,7 +116,7 @@
                   <tr>
                     <td>{{i.customer}}</td>
                     <td>{{i.customer.address}}</td>
-                    <td>{{i.qty}}</td>
+                    <td>{{i.customer.phone}}</td>
                     <td>{{i.cost}}</td>
                   </tr>
                 {% endfor %}
